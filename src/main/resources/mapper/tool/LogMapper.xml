@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xuecms.modules.tool.mapper.LogMapper">
+    
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.xuecms.modules.tool.domain.Log" id="logMap">
+    	<result property="id" column="log_id"/>
+    	<result property="username" column="username"/>
+    	<result property="description" column="description"/>
+    	<result property="method" column="method"/>
+    	<result property="params" column="params"/>
+    	
+    	<result property="logType" column="log_type"/>
+    	<result property="requestIp" column="request_ip"/>
+    	<result property="address" column="address"/>
+    	<result property="browser" column="browser"/>
+    	<result property="time" column="time"/>
+    	
+    	<result property="exceptionDetail" column="exception_detail"/>
+    	<result property="createTime" column="create_time"/>
+    	
+    </resultMap>
+
+</mapper>

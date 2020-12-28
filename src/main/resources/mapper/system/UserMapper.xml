@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xuecms.modules.system.mapper.UserMapper">
+    
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.xuecms.modules.system.domain.User" id="userMap">
+    	<!--  -->
+        <result property="id" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="username" column="username"/>
+        
+        <result property="nickName" column="nick_name"/>
+        <result property="gender" column="gender"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="avatarName" column="avatar_name"/>
+        <result property="avatarPath" column="avatar_path"/>
+        
+        <result property="password" column="password"/>
+        <result property="isAdmin" column="is_admin"/>
+        <result property="enabled" column="enabled"/>
+        
+        <result property="pwdResetTime" column="pwd_reset_time"/>
+        <result property="createTime" column="create_time"/>
+        
+    </resultMap>
+    
+    
+    <update id="updatePass" >
+    	update sys_user set password = #{pass}, pwd_reset_time = #{lastPasswordResetTime} where username = #{username}
+	</update>
+    
+    <update id="updateEmail" >
+    	update sys_user set email = #{email} where username = #{username}
+	</update>
+	
+    <!-- 查询用户角色集合 -->
+    <select id="findByRoleId" parameterType="Long" resultType="com.xuecms.modules.system.domain.User" >
+        SELECT u.* FROM sys_user u, sys_users_roles r WHERE u.user_id = r.user_id AND r.role_id = #{roleId}
+        
+    </select>
+    
+    <select id="countByRoles" parameterType="java.util.List" resultType="Integer" >
+        SELECT count(1) FROM sys_user u, sys_users_roles r WHERE u.user_id = r.user_id AND r.role_id IN 
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+		  #{id}
+		</foreach>
+        
+    </select>
+    
+    <select id="findByMenuId" parameterType="Long" resultType="com.xuecms.modules.system.domain.User" >
+        SELECT u.* FROM sys_user u, sys_users_roles ur, sys_roles_menus rm WHERE u.user_id = ur.user_id AND ur.role_id = rm.role_id AND rm.menu_id = #{id} group by u.user_id
+        
+    </select>
+    
+    <select id="findByPage" resultMap="userMap">
+        SELECT u.* FROM sys_user u, sys_dept d WHERE u.dept_id = d.id 
+        
+        <if test="criteria.deptIds != null and criteria.deptIds.size() > 0 ">
+        	and d.id IN 
+			<foreach collection="criteria.deptIds" item="deptId" index="index" open="(" close=")" separator=",">
+			  #{deptId}
+			</foreach>
+		</if>
+		
+		<if test="criteria.enabled != null ">
+            and u.enabled = #{criteria.enabled}
+        </if>
+		
+		<if test="criteria.blurry != null and criteria.blurry != ''">
+            and u.username like concat('%', #{criteria.blurry}, '%')
+        </if>
+        
+        <if test="criteria.createTime != null and criteria.createTime.size() > 0 ">
+        <!--  
+			<![CDATA[ and DATE_FORMAT(u.create_time, '%Y-%m-%d 00:00:00') >= DATE_FORMAT(#{criteria.startTime}, '%Y-%m-%d 00:00:00') ]]>
+			<![CDATA[ and DATE_FORMAT(u.create_time, '%Y-%m-%d 23:59:59') <= DATE_FORMAT(#{criteria.endTime}, '%Y-%m-%d 23:59:59') ]]>
+		-->
+			<![CDATA[ and u.create_time >= #{criteria.startTime} ]]>
+			<![CDATA[ and u.create_time <= #{criteria.endTime} ]]>
+			
+		</if>
+		
+        order by u.user_id desc 
+        
+    </select>
+    
+
+</mapper>
