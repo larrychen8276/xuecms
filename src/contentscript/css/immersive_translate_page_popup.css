@@ -1,0 +1,304 @@
+html {
+    font-size: 17px;
+}
+
+#mount#mount {
+    position: absolute;
+    display: none;
+    min-width: 250px;
+    height: auto;
+    --font-size: 17px;
+    font-size: 17px;
+}
+
+
+/* float-ball */
+.immersive-translate-float-ball-container {
+    position: fixed;
+    padding: 0;
+    z-index: 2147483647;
+    top: 335px;
+    width: 56px;
+    display: flex;
+    flex-direction: column;
+    display: none;
+}
+
+.immersive-translate-float-ball-container.left {
+    align-items: flex-start;
+    left: 0;
+}
+
+.immersive-translate-float-ball-container.right {
+    align-items: flex-end;
+    right: 0;
+}
+
+.immersive-translate-float-ball-btn {
+    background: linear-gradient(320.9deg, #DB3B7B 26.47%, #FFCEE2 88.86%);
+    height: 36px;
+    width: 56px;
+    box-shadow: 2px 6px 10px 0px #0E121629;
+}
+
+.immersive-translate-float-ball-btn.left {
+    border-top-right-radius: 36px;
+    border-bottom-right-radius: 36px;
+}
+
+
+.immersive-translate-float-ball-btn.right {
+    border-top-left-radius: 36px;
+    border-bottom-left-radius: 36px;
+}
+
+
+
+.immersive-translate-float-ball-btn div {
+    background: linear-gradient(140.91deg, #FF87B7 12.61%, #EC4C8C 76.89%);
+    height: 34px;
+    width: 54px;
+    margin: 1px;
+    display: flex;
+    align-items: center;
+}
+
+
+.immersive-translate-float-ball-btn.left div {
+    border-top-right-radius: 34px;
+    border-bottom-right-radius: 34px;
+    justify-content: flex-end;
+}
+
+.immersive-translate-float-ball-btn.right div {
+    border-top-left-radius: 34px;
+    border-bottom-left-radius: 34px;
+}
+
+
+.immersive-translate-float-ball-logo-img {
+    width: 20px;
+    height: 20px;
+    margin: 0 10px;
+}
+
+.immersive-translate-float-ball-translated-img {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    bottom: 4px;
+    right: 20px;
+}
+
+.btn-animate {
+    cursor: pointer;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-transition: -webkit-transform ease-out 250ms;
+    transition: -webkit-transform ease-out 250ms;
+    transition: transform ease-out 250ms;
+    transition: transform ease-out 250ms, -webkit-transform ease-out 250ms;
+}
+
+.immersive-translate-float-ball-setting-btn {
+    margin-right: 18px;
+    width: 28px;
+    height: 28px;
+}
+
+.immersive-translate-popup-wrapper {
+    background: var(--background-color);
+    border-radius: 20px;
+    box-shadow: 2px 10px 24px 0px #0E121614;
+    border: none;
+    overflow: hidden;
+}
+
+.immersive-translate-float-ball-close-content {
+    padding: 22px;
+    width: 320px;
+}
+
+.immersive-translate-float-ball-close-title {
+    font-weight: 500;
+    color: var(--h2-color);
+}
+
+.immersive-translate-float-ball-close-radio-content {
+    background-color: var(--background-light-green);
+    padding: 8px 20px;
+}
+
+.immersive-translate-float-ball-radio-sel,
+.immersive-translate-float-ball-radio-nor {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.immersive-translate-float-ball-radio-sel {
+    border: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.immersive-translate-float-ball-radio-sel div {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: var(--primary);
+}
+
+.immersive-translate-float-ball-radio-nor {
+    border: 2px solid #D3D4D6;
+}
+
+
+
+.immersive-translate-float-ball-primary-btn {
+    background-color: var(--primary);
+    width: 72px;
+    height: 32px;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.immersive-translate-float-ball-default-btn {
+    border: 1px solid var(--primary);
+    width: 72px;
+    height: 32px;
+    border-radius: 8px;
+    color: var(--primary);
+    line-height: 32px;
+    text-align: center;
+    font-size: 16px;
+}
+
+
+.immersive-translate-float-ball-guide-container {
+    width: 312px;
+    transform: translateY(-50%);
+}
+
+.immersive-translate-float-ball-guide-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+}
+
+.immersive-translate-float-ball-guide-bg.left {
+    transform: scaleX(-1);
+}
+
+.immersive-translate-float-ball-guide-content {
+    margin: 16px 32px 60px 21px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.immersive-translate-float-ball-guide-content.left {
+    margin: 16px 21px 60px 32px;
+}
+
+.immersive-translate-float-ball-guide-img {
+    width: 235px;
+    margin-top: 16px;
+}
+
+
+.immersive-translate-float-ball-guide-message {
+    font-size: 16px;
+    line-height: 28px;
+    color: #333333;
+    white-space: pre-wrap;
+    text-align: center;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+
+.immersive-translate-float-ball-guide-button {
+    margin-top: 16px;
+    line-height: 40px;
+    height: 40px;
+    padding: 0 20px;
+    width: unset;
+}
+
+.immersive-translate-float-ball-more-buttons {
+    box-shadow: 0px 2px 10px 0px #00000014;
+    border: 1px solid var(--float-ball-more-button-border-color);
+    background: var(--float-ball-more-button-background-color);
+    width: 36px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    margin-right: 8px;
+}
+
+.immersive-translate-float-ball-more-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.immersive-translate-float-ball-more-buttons svg path {
+    fill: var(--float-ball-more-button-svg-color);
+}
+
+/* Sheet.css */
+.immersive-translate-sheet {
+    position: fixed;
+    transform: translateY(100%);
+    /* Start off screen */
+    left: 0;
+    right: 0;
+    background-color: white;
+    transition: transform 0.3s ease-out;
+    /* Smooth slide transition */
+    box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+    /* Ensure it's above other content */
+    bottom: 0;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    overflow: hidden;
+}
+
+.immersive-translate-sheet.visible {
+    transform: translateY(0);
+}
+
+.immersive-translate-sheet-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+.immersive-translate-sheet-backdrop.visible {
+    opacity: 1;
+}
+
+.popup-container-sheet {
+    max-width: 100vw;
+    width: 100vw;
+}
