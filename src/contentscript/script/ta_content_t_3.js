@@ -298,6 +298,7 @@ function Gm(t) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function Jy({onOpenUrl: t, openOptionsPage: e, type: n}) {
+    // TODO:supportedVideoSubtitleSites -> 支持双语字幕的视频网站
     let {t: r} = Ce()
         // , a = Me()
         , a = x
@@ -738,6 +739,8 @@ function q5() {
         Ws = []
 }
 function qy(t) {
+    debugger;
+
     let {t: e} = Ce()
         , {ctx: n, setSettings: r} = t
         , a = j5(t);
@@ -823,6 +826,8 @@ function j5({ctx: t, openOptionsPage: e, setSettings: n}) {
     ), [i, a])
 }
 function H5(t) {
+    debugger;
+
     let {ctx: e, setSettings: n} = t
         , {t: r} = Ce()
         , a = e.config.generalRule

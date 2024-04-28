@@ -33,16 +33,16 @@ function K8(t, e) {
 async function Vm() {
     //debugger;
 
-    const immersive_translate_picoResponse = await fetch(oe.runtime.getURL("/libs/css/immersive_translate_pico.css"));
+    const immersive_translate_picoResponse = await fetch(oe.runtime.getURL("/script/contentscript/css/immersive_translate_pico.css"));
     let immersive_translate_picoContent = await immersive_translate_picoResponse.text()
 
-    const immersive_translate_commonResponse = await fetch(oe.runtime.getURL("/libs/css/immersive_translate_common.css"));
+    const immersive_translate_commonResponse = await fetch(oe.runtime.getURL("/script/contentscript/css/immersive_translate_common.css"));
     let immersive_translate_commonContent = await immersive_translate_commonResponse.text()
 
-    const immersive_translate_popupResponse = await fetch(oe.runtime.getURL("/libs/css/immersive_translate_popup.css"));
+    const immersive_translate_popupResponse = await fetch(oe.runtime.getURL("/script/contentscript/css/immersive_translate_popup.css"));
     let immersive_translate_popupContent = await immersive_translate_popupResponse.text()
 
-    const immersive_translate_page_popupResponse = await fetch(oe.runtime.getURL("/libs/css/immersive_translate_page_popup.css"));
+    const immersive_translate_page_popupResponse = await fetch(oe.runtime.getURL("/script/contentscript/css/immersive_translate_page_popup.css"));
     let immersive_translate_page_popupContent = await immersive_translate_page_popupResponse.text()
 
     let t = Me()

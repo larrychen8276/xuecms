@@ -23,3 +23,7 @@ var qg = Gi(null)
         })
     }
 ;
+
+function Ce() {
+    return Kl(qg)
+}

@@ -505,7 +505,7 @@ function P7(t) {
 
                     debugger;
 
-                    let immersive_translate_input_injectedContent = oe.runtime.getURL("/libs/css/immersive_translate_input_injected.css")
+                    let immersive_translate_input_injectedContent = oe.runtime.getURL("/script/contentscript/css/immersive_translate_input_injected.css")
 
                     // R.textContent = _.IMMERSIVE_TRANSLATE_INPUT_INJECTED_CSS,
                     R.textContent = immersive_translate_input_injectedContent,

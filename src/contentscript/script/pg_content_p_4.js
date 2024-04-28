@@ -200,17 +200,8 @@ function bc(t, e) {
     let n = `<?xml version="1.0" encoding="utf-8" ?>${e.documentElement.outerHTML}`;
     return ek(t, n)
 }
-function DT(t) {
-    if (!t)
-        return null;
-    try {
-        let e = t;
-        return t.startsWith("//") ? e = globalThis.location.protocol + t : t.startsWith("/") ? e = `${globalThis.location.protocol}//${globalThis.location.host}${t}` : t.startsWith("http") || (e = `${globalThis.location.protocol}//${t}`),
-            new URL(e).toString()
-    } catch {
-        return t
-    }
-}
+
+
 function Gg(t, e, n, r, a=!1) {
     let i = [...t.textTracks].find(o=>o.label === e);
     if (!i)

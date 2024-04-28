@@ -891,10 +891,6 @@ function Oy(t, e) {
 }
 
 
-
-
-var xue = x.REDIRECT_URL;
-
 var ele = Gi([]);
 function Bv(t) {
     let[e,n] = se(null);
@@ -1236,7 +1232,7 @@ function q8(t) {
 
 
 function J8(t, e) {
-    debugger;
+    //debugger;
 
     let n = t.document;
     if (t9)
@@ -1586,6 +1582,9 @@ async function td() {
     Mi.clearStrictTicks();
     let t = await We(Ee(), {})
         , e = await fs();
+
+    //debugger;
+
     if (B.debug("init page ctx", t),
         cy(t),
     t.rule.pageType == "subtitleBuilder") {
@@ -1899,7 +1898,7 @@ async function I9() {
     if (!dt(t.url, t.config.inputStyleBlockUrls)) {
 
         // let n = Me().IMMERSIVE_TRANSLATE_INPUT_INJECTED_CSS;
-        let immersive_translate_input_injectedContent = oe.runtime.getURL("/libs/css/immersive_translate_input_injected.css");
+        let immersive_translate_input_injectedContent = oe.runtime.getURL("/script/contentscript/css/immersive_translate_input_injected.css");
         let n = immersive_translate_input_injectedContent;
         En(document, n, "immersive-translate-input-injected-css")
     }

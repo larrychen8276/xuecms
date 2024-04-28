@@ -2,7 +2,7 @@
 function io(t, e) {
     // let r = x.IMMERSIVE_TRANSLATE_INJECTED_CSS;
 
-    let immersive_translate_input_injectedContent = oe.runtime.getURL("/libs/css/immersive_translate_injected.css")
+    let immersive_translate_input_injectedContent = oe.runtime.getURL("/script/contentscript/css/immersive_translate_injected.css")
     // console.log(immersive_translate_input_injectedContent)
     let r = immersive_translate_input_injectedContent;
 

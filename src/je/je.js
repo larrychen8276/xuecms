@@ -177,6 +177,8 @@ var je = class {
         async isShowQuickButton() {
             return !0
         }
+
+        // TODO:字幕插入ID
         quickButtonId = "immersive-translate-quick-button-container";
         getAppendQuickButtonElement() {
             if (!this.config.quickButtonRule || !this.config.quickButtonRule.appendSelector)

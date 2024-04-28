@@ -1,4 +1,48 @@
 
+function G2(t) {
+    let e = t.split(".");
+    if (e.length <= 1)
+        throw new Error("invlaid token");
+    let n = e[1];
+    if (!n)
+        throw new Error("invalid base64 url token");
+    let r = n.replace(/-/g, "+").replace(/_/g, "/")
+        , a = decodeURIComponent(globalThis.atob(r).split("").map(function(s) {
+        return "%" + ("00" + s.charCodeAt(0).toString(16)).slice(-2)
+    }).join(""))
+        , i = JSON.parse(a)
+        , o = new Date(i.exp * 1e3);
+    return {
+        accessToken: t,
+        accessTokenExpiresAt: o.toISOString()
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+async function ac(t) {
+    await np(t)
+}
+async function ic(t, e) {
+    let n = await X0(t);
+    if (n?.accessToken && n?.accessTokenExpiresAt) {
+        let r = Date.now()
+            , i = new Date(n.accessTokenExpiresAt).getTime();
+        if (i - r > 30 * 1e3)
+            return n;
+        if (i - r > 3e3)
+            return $2(t, e)
+    }
+    return $2(t, e)
+}
+async function $2(t, e) {
+    let n = await e()
+        , r = n.accessTokenExpiresAt
+        , i = new Date(r).getTime() - Date.now();
+    return await ep(t, n, i - 1e3),
+        n
+}
+
 var bA = [["auto", ""], ["ar", "ar"], ["ga", "ga"], ["et", "et"], ["bg", "bg"], ["is", "is"], ["pl", "pl"], ["bs", "bs-Latn"], ["fa", "fa"], ["da", "da"], ["de", "de"], ["ru", "ru"], ["fr", "fr"], ["zh-TW", "zh-Hant"], ["fil", "fil"], ["fj", "fj"], ["fi", "fi"], ["gu", "gu"], ["kk", "kk"], ["he", "he"], ["ht", "ht"], ["ko", "ko"], ["nl", "nl"], ["ca", "ca"], ["zh-CN", "zh-Hans"], ["wyw", "lzh"], ["cs", "cs"], ["kn", "kn"], ["otq", "otq"], ["tlh", "tlh"], ["hr", "hr"], ["lv", "lv"], ["lt", "lt"], ["ro", "ro"], ["mg", "mg"], ["mt", "mt"], ["mr", "mr"], ["ml", "ml"], ["ms", "ms"], ["mi", "mi"], ["bn", "bn-BD"], ["hmn", "mww"], ["af", "af"], ["pa", "pa"], ["pt", "pt"], ["ps", "ps"], ["ja", "ja"], ["sv", "sv"], ["sm", "sm"], ["sr-Latn", "sr-Latn"], ["sr-Cyrl", "sr-Cyrl"], ["no", "nb"], ["sk", "sk"], ["sl", "sl"], ["sw", "sw"], ["ty", "ty"], ["te", "te"], ["ta", "ta"], ["th", "th"], ["to", "to"], ["tr", "tr"], ["cy", "cy"], ["ur", "ur"], ["uk", "uk"], ["es", "es"], ["el", "el"], ["hu", "hu"], ["it", "it"], ["hi", "hi"], ["id", "id"], ["en", "en"], ["yua", "yua"], ["bo", "bo"], ["vi", "vi"]]
     , lg = new Map(bA)
     , Fs = class extends De {

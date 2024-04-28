@@ -21,6 +21,7 @@ var Jk = {
 }, zc;
 function cy(t) {
     try {
+        //TODO:在（buildin_config_default.js）的
         let e = t.rule.subtitleRule;
         if (e.disabled || !e.type)
             return;

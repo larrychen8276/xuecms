@@ -2,6 +2,24 @@
 async function hn(t) {
     //debugger;
 
+    /*
+    第一次返回：undefined
+    第二次返回
+    {
+    "translationMode": "dual",
+    "translationArea": "main",
+    "translationStartMode": "immediate",
+    "immediateTranslationTextCount": 4999,
+    "isAutoTranslate": true,
+    "translationDebounce": 300,
+    "isNeedClean": false,
+    "isDetectParagraphLanguage": true,
+    "cache": true,
+    "translationTheme": "none",
+    "isTranslateDirectlyOnHover": false
+    }
+     */
+    //TODO:第一次读取翻译服务（buildin_config_default.js -> translationService）
     let {url: e, config: n, state: r} = t
         , a = new URL(e)
         , i = "auto"
@@ -118,7 +136,11 @@ async function hn(t) {
     ie && ie.translationDebounce && typeof ie.translationDebounce == "number" && (J.state.translationDebounce = ie.translationDebounce);
     let ge = U.immediateTranslationTextCount;
     n.immediateTranslationTextCount !== ge && (J.state.immediateTranslationTextCount = n.immediateTranslationTextCount);
+
+    //debugger;
+    //TODO:翻译规则设定
     let ee = n.rules, Y;
+
     globalThis.PDFViewerApplication ? Y = ee.find(ne=>ne.pageType == "pdfReader") : globalThis.immersiveTranslateEbookViewer ? Y = ee.find(ne=>ne.pageType == "ebookReader") : globalThis.immersiveTranslateEbookBuilder ? Y = ee.find(ne=>ne.pageType == "ebookBuilder") : Y = ee.find(ne=>to(e, ne)),
     J.state.translationArea === "body" && (J.rule.paragraphMinTextCount = 1,
         J.rule.paragraphMinWordCount = 1),

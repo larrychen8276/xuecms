@@ -219,6 +219,8 @@ async function Pn() {
             }
         }
     }
+
+    // TODO:加载配置文件 buildin_config_default.js -> var _i
     let _ = Object.assign(i, e);
     Ka({
         rule: e,
@@ -241,6 +243,7 @@ async function Pn() {
             _.translationServices.openai.provider = "pro");
     let q = Object.keys(_)
         , F = ["translationUrlPattern", "translationLanguagePattern", "immediateTranslationPattern", "translationBodyAreaPattern", "translationParagraphLanguagePattern", "translationThemePatterns", "translationGeneralConfig", "shortcuts", "inputTranslationUrlPattern", "inputLanguageCodeAlias"];
+
     for (let C of q) {
         let L = C;
         if (L === "generalRule")

@@ -40,7 +40,10 @@ var t9 = !1
     }
     , 50);
 
+// TODO:总是翻译的网站地址 -> (设置 ->基本设置 -> 总是翻译的网址)
 async function t7() {
+    debugger;
+
     let t = await fn()
         , e = t.enableDefaultAlwaysTranslatedUrls === void 0 ? !0 : t.enableDefaultAlwaysTranslatedUrls;
     if (t.enableDefaultAlwaysTranslatedUrls = !e,
@@ -89,7 +92,7 @@ function s9(t) {
             // , p = Me();
             , p = x;
 
-        let immersive_translate_input_injectedContent = oe.runtime.getURL("/libs/css/immersive_translate_input_injected.css");
+        let immersive_translate_input_injectedContent = oe.runtime.getURL("/script/contentscript/css/immersive_translate_input_injected.css");
 
         //c.textContent = p.IMMERSIVE_TRANSLATE_INPUT_INJECTED_CSS,
         c.textContent = immersive_translate_input_injectedContent,
