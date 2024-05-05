@@ -1,6 +1,3 @@
-"use strict";
-
-
 var fx = {
     "Amazon Silk": "amazon_silk",
     "Android Browser": "android",

@@ -1,4 +1,3 @@
-
 var X3 = "G-MKMD9LWFTR";
 async function ot(t, e, n) {
     try {
@@ -137,8 +136,78 @@ function bD(t) {
     return e
 }
 
+function Ml(t) {
+    let n = t.toLocaleString("en-US", {
+        timeZone: "Asia/Shanghai"
+    }).split(" ")[0];
+    return n.endsWith(",") && (n = n.slice(0, -1)),
+        n
+}
+
+function TD(t) {
+    try {
+        let n = t.toLocaleString("en-US", {
+            timeZone: "Asia/Shanghai"
+        }).split(" ")[0];
+        n.endsWith(",") && (n = n.slice(0, -1));
+        let[r,a,i] = n.split("/");
+        return n = `${i}-${r}-${a}`,
+            n
+    } catch {
+        return "unknown"
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Hw = "";
+function Li() {
+    return Hw || globalThis.navigator.userAgent
+}
+function sp() {
+    return Li().includes("ImtFxiOS")
+}
+function m3() {
+    let e = Li().match(/ImtFxiOS\/(\d+\.\d+\.\d+)/);
+    return e ? e[1] : null
+}
+function Ww() {
+    return Li().includes("ImtFxAndroid")
+}
+function f3() {
+    let t = Li();
+    return /ImtFxAndroid\/(\d+\.\d+\.\d+)\/google/.test(t)
+}
+function h3() {
+    let e = Li().match(/ImtFxAndroid\/(\d+\.\d+\.\d+)/);
+    return e ? e[1] : null
+}
+
+function us() {
+    let t = Li();
+    if (sp() || Ww()) {
+        let e = t.match(/Imt[\w/.]+/);
+        if (e) {
+            let n = e[0].split("/")
+                , r = n[0];
+            return n[2] && (r += "_" + n[2]),
+                {
+                    name: r,
+                    version: n[1]
+                }
+        }
+    }
+    return null
+}
+
+var cl;
+function Kw() {
+    debugger;
+
+    return cl || (cl = new ea("content_script",!1).getConnection("pure_main", ()=>{}
+    ),
+        cl)
+}
 
 var b3 = "G-MKMD9LWFTR";
 async function ls(t) {
@@ -229,4 +298,40 @@ function Gw(t) {
         e += n.charAt(Math.floor(Math.random() * r)),
             a += 1;
     return e
+}
+
+function T3(t) {
+    let n = t.toLocaleString("en-US", {
+        timeZone: "Asia/Shanghai"
+    }).split(" ")[0];
+    return n.endsWith(",") && (n = n.slice(0, -1)),
+        n
+}
+function $w(t) {
+    try {
+        let n = t.toLocaleString("en-US", {
+            timeZone: "Asia/Shanghai"
+        }).split(" ")[0];
+        n.endsWith(",") && (n = n.slice(0, -1));
+        let[r,a,i] = n.split("/");
+        return n = `${i}-${r}-${a}`,
+            n
+    } catch {
+        return "unknown"
+    }
+}
+
+async function Vw(t) {
+    return await Kw().sendMessage("background:main", t)
+}
+function dl(t) {
+    debugger;
+    return au() ? ul({
+        method: "request",
+        data: t
+    }) : ye() || ru() ? (t.fetchPolyfill = globalThis.GM_fetch,
+        Wa(t)) : Vw({
+        method: "fetch",
+        data: t
+    })
 }

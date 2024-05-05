@@ -12,40 +12,6 @@ function y3(t) {
 }
 
 
-function pl(t) {
-    if (t.beta)
-        return !1;
-    if (tt() && t.spVersion)
-        return cs(ap(), t.spVersion);
-    if (f3() && t.gspVersion) {
-        let e = h3();
-        if (e)
-            return cs(e, t.gspVersion)
-    }
-    if (sp() && t.ispVersion) {
-        let e = m3();
-        if (e)
-            return cs(e, t.ispVersion)
-    }
-    return !1
-}
-function cs(t, e) {
-    let n = t.split(".").reverse()
-        , r = e.split(".").reverse()
-        , a = 0
-        , i = 0
-        , o = 1;
-    for (let s = 0; s < 3; s++)
-        a += o * Number(r[s] || "0"),
-            i += o * Number(n[s] || "0"),
-            o *= 100;
-    return i >= a
-}
-
-function up(t) {
-    t.message?.indexOf("token invalid") >= 0 && Mt.remove(Ft)
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 var i6 = (t,e)=>()=>(t && (e = t(t = 0)),

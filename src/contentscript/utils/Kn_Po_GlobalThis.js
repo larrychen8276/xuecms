@@ -1,5 +1,3 @@
-"use strict";
-
 var lu = globalThis || (typeof window < "u" ? window : self)
     , kS = Object.create
     , Pd = Object.defineProperty

@@ -1,108 +1,900 @@
-"use strict";
 
-var Zr = class t {
-        static id = "Dedupe";
-        name = t.id;
-        _previousEvent;
-        setupOnce(e, n) {
-            let r = a=>{
-                    let i = n().getIntegration(t);
-                    if (i) {
-                        try {
-                            if (kC(a, i._previousEvent))
-                                return !1 && Se.warn("Event dropped due to being a duplicate of previously captured event."),
-                                    null
-                        } catch {
-                            return i._previousEvent = a
-                        }
-                        return i._previousEvent = a
-                    }
-                    return a
-                }
-            ;
-            r.id = this.name,
-                e(r)
-        }
+var pd = Object.defineProperty;
+var eu = (t,e)=>{
+    for (var n in e)
+        pd(t, n, {
+            get: e[n],
+            enumerable: !0
+        })
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var fh = Object.prototype.toString;
+function Tu(t) {
+    switch (fh.call(t)) {
+        case "[object Error]":
+        case "[object Exception]":
+        case "[object DOMException]":
+            return !0;
+        default:
+            return or(t, Error)
     }
-;
-function kC(t, e) {
-    return e ? !!(PC(t, e) || LC(t, e)) : !1
 }
-function PC(t, e) {
-    let n = t.message
-        , r = e.message;
-    return !(!n && !r || n && !r || !n && r || n !== r || !T4(t, e) || !b4(t, e))
+function Io(t, e) {
+    return fh.call(t) === `[object ${e}]`
 }
-function LC(t, e) {
-    let n = f4(e)
-        , r = f4(t);
-    return !(!n || !r || n.type !== r.type || n.value !== r.value || !T4(t, e) || !b4(t, e))
+function yu(t) {
+    return Io(t, "ErrorEvent")
 }
-function b4(t, e) {
-    let n = h4(t)
-        , r = h4(e);
-    if (!n && !r)
-        return !0;
-    if (n && !r || !n && r || (n = n,
-        r = r,
-    r.length !== n.length))
-        return !1;
-    for (let a = 0; a < r.length; a++) {
-        let i = r[a]
-            , o = n[a];
-        if (i.filename !== o.filename || i.lineno !== o.lineno || i.colno !== o.colno || i.function !== o.function)
-            return !1
-    }
-    return !0
+function hh(t) {
+    return Io(t, "DOMException")
 }
-function T4(t, e) {
-    let n = t.fingerprint
-        , r = e.fingerprint;
-    if (!n && !r)
-        return !0;
-    if (n && !r || !n && r)
-        return !1;
-    n = n,
-        r = r;
+function Dr(t) {
+    return Io(t, "String")
+}
+function Ro(t) {
+    return t === null || typeof t != "object" && typeof t != "function"
+}
+function Yn(t) {
+    return Io(t, "Object")
+}
+function Oo(t) {
+    return typeof Event < "u" && or(t, Event)
+}
+function bh(t) {
+    return !1
+}
+function Th(t) {
+    return Io(t, "RegExp")
+}
+function hi(t) {
+    return !!(t && t.then && typeof t.then == "function")
+}
+function yh(t) {
+    return Yn(t) && "nativeEvent"in t && "preventDefault"in t && "stopPropagation"in t
+}
+function vh(t) {
+    return typeof t == "number" && t !== t
+}
+function or(t, e) {
     try {
-        return n.join("") === r.join("")
+        return t instanceof e
     } catch {
         return !1
     }
 }
-function f4(t) {
-    return t.exception && t.exception.values && t.exception.values[0]
+function zo(t, e) {
+    try {
+        let n = t, r = 5, a = 80, i = [], o = 0, s = 0, u = " > ", l = u.length, c;
+        for (; n && o++ < r && (c = Xx(n, e),
+            !(c === "html" || o > 1 && s + i.length * l + c.length >= a)); )
+            i.push(c),
+                s += c.length,
+                n = n.parentNode;
+        return i.reverse().join(u)
+    } catch {
+        return "<unknown>"
+    }
 }
-function h4(t) {
-    let e = t.exception;
-    if (e)
+function Xx(t, e) {
+    let n = t, r = [], a, i, o, s, u;
+    if (!n || !n.tagName)
+        return "";
+    r.push(n.tagName.toLowerCase());
+    let l = e && e.length ? e.filter(p=>n.getAttribute(p)).map(p=>[p, n.getAttribute(p)]) : null;
+    if (l && l.length)
+        l.forEach(p=>{
+                r.push(`[${p[0]}="${p[1]}"]`)
+            }
+        );
+    else if (n.id && r.push(`#${n.id}`),
+        a = n.className,
+    a && Dr(a))
+        for (i = a.split(/\s+/),
+                 u = 0; u < i.length; u++)
+            r.push(`.${i[u]}`);
+    let c = ["type", "name", "title", "alt"];
+    for (u = 0; u < c.length; u++)
+        o = c[u],
+            s = n.getAttribute(o),
+        s && r.push(`[${o}="${s}"]`);
+    return r.join("")
+}
+function Sh() {
+    try {
+        return location.href
+    } catch {
+        return ""
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Tt = class extends Error {
+        constructor(n) {
+            super(n);
+            this.message = n;
+            this.name = new.target.prototype.constructor.name,
+                Object.setPrototypeOf(this, new.target.prototype)
+        }
+        name
+    }
+;
+var eE = /^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/;
+function tE(t) {
+    return t === "http" || t === "https"
+}
+function Fa(t, e=!1) {
+    let {host: n, path: r, pass: a, port: i, projectId: o, protocol: s, publicKey: u} = t;
+    return `${s}://${u}${e && a ? `:${a}` : ""}@${n}${i ? `:${i}` : ""}/${r && `${r}/`}${o}`
+}
+
+function nE(t) {
+    let e = eE.exec(t);
+    if (!e)
+        throw new Tt(`Invalid Sentry Dsn: ${t}`);
+    let[n,r,a="",i,o="",s] = e.slice(1)
+        , u = ""
+        , l = s
+        , c = l.split("/");
+    if (c.length > 1 && (u = c.slice(0, -1).join("/"),
+        l = c.pop()),
+        l) {
+        let p = l.match(/^\d+/);
+        p && (l = p[0])
+    }
+    return xh({
+        host: i,
+        pass: a,
+        path: u,
+        projectId: l,
+        port: o,
+        protocol: n,
+        publicKey: r
+    })
+}
+function xh(t) {
+    return {
+        protocol: t.protocol,
+        publicKey: t.publicKey || "",
+        pass: t.pass || "",
+        host: t.host,
+        port: t.port || "",
+        path: t.path || "",
+        projectId: t.projectId
+    }
+}
+function rE(t) {
+    if (!!1)
+        return;
+    let {port: e, projectId: n, protocol: r} = t;
+    if (["protocol", "publicKey", "host", "projectId"].forEach(i=>{
+            if (!t[i])
+                throw new Tt(`Invalid Sentry Dsn: ${String(i)} missing`)
+        }
+    ),
+        !n.match(/^\d+$/))
+        throw new Tt(`Invalid Sentry Dsn: Invalid projectId ${n}`);
+    if (!tE(r))
+        throw new Tt(`Invalid Sentry Dsn: Invalid protocol ${r}`);
+    if (e && isNaN(parseInt(e, 10)))
+        throw new Tt(`Invalid Sentry Dsn: Invalid port ${e}`);
+    return !0
+}
+function vu(t) {
+    let e = typeof t == "string" ? nE(t) : xh(t);
+    return rE(e),
+        e
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var aE = {};
+function it() {
+    return typeof window < "u" ? window : typeof self < "u" ? self : aE
+}
+function bi(t, e, n) {
+    let r = n || it()
+        , a = r.__SENTRY__ = r.__SENTRY__ || {};
+    return a[t] || (a[t] = e())
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var No = ["debug", "info", "warn", "error", "log", "assert", "trace"];
+function Vd(t) {
+    if (!("console"in it()))
+        return t();
+    let n = console
+        , r = {};
+    No.forEach(a=>{
+            let i = n[a] && n[a].__sentry_original__;
+            a in console && i && (r[a] = n[a],
+                n[a] = i)
+        }
+    );
+    try {
+        return t()
+    } finally {
+        Object.keys(r).forEach(a=>{
+                n[a] = r[a]
+            }
+        )
+    }
+}
+function Eh() {
+    let t = !1
+        , e = {
+        enable: ()=>{
+            t = !0
+        }
+        ,
+        disable: ()=>{
+            t = !1
+        }
+    };
+    return !1 ? No.forEach(n=>{
+            e[n] = (...r)=>{
+                t && Vd(()=>{}
+                )
+            }
+        }
+    ) : No.forEach(n=>{
+            e[n] = ()=>{}
+        }
+    ),
+        e
+}
+
+var Se;
+!1 ? Se = bi("logger", Eh) : Se = Eh();
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Ma(t, e=0) {
+    return typeof t != "string" || e === 0 || t.length <= e ? t : `${t.substr(0, e)}...`
+}
+function Yd(t, e) {
+    if (!Array.isArray(t))
+        return "";
+    let n = [];
+    for (let r = 0; r < t.length; r++) {
+        let a = t[r];
         try {
-            return e.values[0].stacktrace.frames
+            n.push(String(a))
         } catch {
-            return
+            n.push("[value cannot be serialized]")
+        }
+    }
+    return n.join(e)
+}
+function Su(t, e) {
+    return Dr(t) ? Th(e) ? e.test(t) : typeof e == "string" ? t.indexOf(e) !== -1 : !1 : !1
+}
+function Qn(t, e, n) {
+    if (!(e in t))
+        return;
+    let r = t[e]
+        , a = n(r);
+    if (typeof a == "function")
+        try {
+            Jd(a, r)
+        } catch {}
+    t[e] = a
+}
+function Uo(t, e, n) {
+    Object.defineProperty(t, e, {
+        value: n,
+        writable: !0,
+        configurable: !0
+    })
+}
+function Jd(t, e) {
+    let n = e.prototype || {};
+    t.prototype = e.prototype = n,
+        Uo(t, "__sentry_original__", e)
+}
+function Ti(t) {
+    return t.__sentry_original__
+}
+function Dh(t) {
+    return Object.keys(t).map(e=>`${encodeURIComponent(e)}=${encodeURIComponent(t[e])}`).join("&")
+}
+function Zd(t) {
+    if (Tu(t))
+        return {
+            message: t.message,
+            name: t.name,
+            stack: t.stack,
+            ...wh(t)
+        };
+    if (Oo(t)) {
+        let e = {
+            type: t.type,
+            target: Ch(t.target),
+            currentTarget: Ch(t.currentTarget),
+            ...wh(t)
+        };
+        return typeof CustomEvent < "u" && or(t, CustomEvent) && (e.detail = t.detail),
+            e
+    } else
+        return t
+}
+function Ch(t) {
+    try {
+        return bh(t) ? zo(t) : Object.prototype.toString.call(t)
+    } catch {
+        return "<unknown>"
+    }
+}
+function wh(t) {
+    if (typeof t == "object" && t !== null) {
+        let e = {};
+        for (let n in t)
+            Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
+        return e
+    } else
+        return {}
+}
+function Ah(t, e=40) {
+    let n = Object.keys(Zd(t));
+    if (n.sort(),
+        !n.length)
+        return "[object has no keys]";
+    if (n[0].length >= e)
+        return Ma(n[0], e);
+    for (let r = n.length; r > 0; r--) {
+        let a = n.slice(0, r).join(", ");
+        if (!(a.length > e))
+            return r === n.length ? a : Ma(a, e)
+    }
+    return ""
+}
+function Ba(t) {
+    return Qd(t, new Map)
+}
+function Qd(t, e) {
+    if (Yn(t)) {
+        let n = e.get(t);
+        if (n !== void 0)
+            return n;
+        let r = {};
+        e.set(t, r);
+        for (let a of Object.keys(t))
+            typeof t[a] < "u" && (r[a] = Qd(t[a], e));
+        return r
+    }
+    if (Array.isArray(t)) {
+        let n = e.get(t);
+        if (n !== void 0)
+            return n;
+        let r = [];
+        return e.set(t, r),
+            t.forEach(a=>{
+                    r.push(Qd(a, e))
+                }
+            ),
+            r
+    }
+    return t
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var iE = 50;
+function e0(...t) {
+    let e = t.sort((n,r)=>n[0] - r[0]).map(n=>n[1]);
+    return (n,r=0)=>{
+        let a = [];
+        for (let i of n.split(`
+`).slice(r))
+            for (let o of e) {
+                let s = o(i);
+                if (s) {
+                    a.push(s);
+                    break
+                }
+            }
+        return oE(a)
+    }
+}
+function kh(t) {
+    return Array.isArray(t) ? e0(...t) : t
+}
+function oE(t) {
+    if (!t.length)
+        return [];
+    let e = t
+        , n = e[0].function || ""
+        , r = e[e.length - 1].function || "";
+    return (n.indexOf("captureMessage") !== -1 || n.indexOf("captureException") !== -1) && (e = e.slice(1)),
+    r.indexOf("sentryWrapped") !== -1 && (e = e.slice(0, -1)),
+        e.slice(0, iE).map(a=>({
+            ...a,
+            filename: a.filename || e[0].filename,
+            function: a.function || "?"
+        })).reverse()
+}
+var Xd = "<anonymous>";
+function Jn(t) {
+    try {
+        return !t || typeof t != "function" ? Xd : t.name || Xd
+    } catch {
+        return Xd
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Ph() {
+    if (!("fetch"in it()))
+        return !1;
+    try {
+        return new Headers,
+            new Request("http://www.example.com"),
+            new Response,
+            !0
+    } catch {
+        return !1
+    }
+}
+function Lh(t) {
+    return t && /^function fetch\(\)\s+\{\s+\[native code\]\s+\}$/.test(t.toString())
+}
+function _h() {
+    return !0
+}
+var Ar = it()
+    , qo = {}
+    , Fh = {};
+function sE(t) {
+    if (!Fh[t])
+        switch (Fh[t] = !0,
+            t) {
+            case "console":
+                uE();
+                break;
+            case "fetch":
+                lE();
+                break;
+            case "error":
+                pE();
+                break;
+            case "unhandledrejection":
+                gE();
+                break;
+            default:
+                !1 && Se.warn("unknown instrumentation type:", t);
+                return
+        }
+}
+function Zn(t, e) {
+    qo[t] = qo[t] || [],
+        qo[t].push(e),
+        sE(t)
+}
+function yi(t, e) {
+    if (!(!t || !qo[t]))
+        for (let n of qo[t] || [])
+            try {
+                n(e)
+            } catch (r) {
+                !1 && Se.error(`Error while triggering instrumentation handler.
+Type: ${t}
+Name: ${Jn(n)}
+Error:`, r)
+            }
+}
+function uE() {
+    "console"in Ar && No.forEach(function(t) {
+        t in console && Qn(console, t, function(e) {
+            return function(...n) {
+                yi("console", {
+                    args: n,
+                    level: t
+                }),
+                e && e.apply(console, n)
+            }
+        })
+    })
+}
+function lE() {
+    _h() && Qn(Ar, "fetch", function(t) {
+        return function(...e) {
+            let n = {
+                args: e,
+                fetchData: {
+                    method: cE(e),
+                    url: dE(e)
+                },
+                startTimestamp: Date.now()
+            };
+            return yi("fetch", {
+                ...n
+            }),
+                t.apply(Ar, e).then(r=>(yi("fetch", {
+                        ...n,
+                        endTimestamp: Date.now(),
+                        response: r
+                    }),
+                        r), r=>{
+                        throw yi("fetch", {
+                            ...n,
+                            endTimestamp: Date.now(),
+                            error: r
+                        }),
+                            r
+                    }
+                )
+        }
+    })
+}
+function cE(t=[]) {
+    return "Request"in Ar && or(t[0], Request) && t[0].method ? String(t[0].method).toUpperCase() : t[1] && t[1].method ? String(t[1].method).toUpperCase() : "GET"
+}
+function dE(t=[]) {
+    return typeof t[0] == "string" ? t[0] : "Request"in Ar && or(t[0], Request) ? t[0].url : String(t[0])
+}
+var t0 = null;
+function pE() {
+    t0 = Ar.onerror,
+        Ar.onerror = function(t, e, n, r, a) {
+            return yi("error", {
+                column: r,
+                error: a,
+                line: n,
+                msg: t,
+                url: e
+            }),
+                t0 ? t0.apply(this, arguments) : !1
+        }
+}
+var n0 = null;
+function gE() {
+    n0 = Ar.onunhandledrejection,
+        Ar.onunhandledrejection = function(t) {
+            return yi("unhandledrejection", t),
+                n0 ? n0.apply(this, arguments) : !0
         }
 }
 
-////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var Zh = [];
-function Xh(t) {
-    return t.reduce((e,n)=>(e.every(r=>n.name !== r.name) && e.push(n),
-        e), [])
-}
-function h0(t) {
-    let e = t.defaultIntegrations && [...t.defaultIntegrations] || []
-        , n = t.integrations
-        , r = [...Xh(e)];
-    Array.isArray(n) ? r = [...r.filter(o=>n.every(s=>s.name !== o.name)), ...Xh(n)] : typeof n == "function" && (r = n(r),
-        r = Array.isArray(r) ? r : [r]);
-    let a = r.map(o=>o.name)
-        , i = "Debug";
-    return a.indexOf(i) !== -1 && r.push(...r.splice(a.indexOf(i), 1)),
-        r
+function Mh() {
+    let t = typeof WeakSet == "function"
+        , e = t ? new WeakSet : [];
+    function n(a) {
+        if (t)
+            return e.has(a) ? !0 : (e.add(a),
+                !1);
+        for (let i = 0; i < e.length; i++)
+            if (e[i] === a)
+                return !0;
+        return e.push(a),
+            !1
+    }
+    function r(a) {
+        if (t)
+            e.delete(a);
+        else
+            for (let i = 0; i < e.length; i++)
+                if (e[i] === a) {
+                    e.splice(i, 1);
+                    break
+                }
+    }
+    return [n, r]
 }
 
-///////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function kr() {
+    if (crypto && crypto.randomUUID)
+        return crypto.randomUUID().replace(/-/g, "");
+    let t = crypto && crypto.getRandomValues ? ()=>crypto.getRandomValues(new Uint8Array(1))[0] : ()=>Math.random() * 16;
+    return ([1e7] + 1e3 + 4e3 + 8e3 + 1e11).replace(/[018]/g, e=>(e ^ (t() & 15) >> e / 4).toString(16))
+}
+function xu(t) {
+    if (!t)
+        return {};
+    let e = t.match(/^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/);
+    if (!e)
+        return {};
+    let n = e[6] || ""
+        , r = e[8] || "";
+    return {
+        host: e[4],
+        path: e[5],
+        protocol: e[2],
+        relative: e[5] + n + r
+    }
+}
+
+function Bh(t) {
+    return t.exception && t.exception.values ? t.exception.values[0] : void 0
+}
+function Pr(t) {
+    let {message: e, event_id: n} = t;
+    if (e)
+        return e;
+    let r = Bh(t);
+    return r ? r.type && r.value ? `${r.type}: ${r.value}` : r.type || r.value || n || "<unknown>" : n || "<unknown>"
+}
+function jo(t, e, n) {
+    let r = t.exception = t.exception || {}
+        , a = r.values = r.values || []
+        , i = a[0] = a[0] || {};
+    i.value || (i.value = e || ""),
+    i.type || (i.type = n || "Error")
+}
+function Gr(t, e) {
+    let n = Bh(t);
+    if (!n)
+        return;
+    let r = {
+        type: "generic",
+        handled: !0
+    }
+        , a = n.mechanism;
+    if (n.mechanism = {
+        ...r,
+        ...a,
+        ...e
+    },
+    e && "data"in e) {
+        let i = {
+            ...a && a.data,
+            ...e.data
+        };
+        n.mechanism.data = i
+    }
+}
+function r0(t) {
+    if (t && t.__sentry_captured__)
+        return !0;
+    try {
+        Uo(t, "__sentry_captured__", !0)
+    } catch {}
+    return !1
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Ih() {
+    return !1
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Lr(t, e=1 / 0, n=1 / 0) {
+    try {
+        return a0("", t, e, n)
+    } catch (r) {
+        return {
+            ERROR: `**non-serializable** (${r})`
+        }
+    }
+}
+function i0(t, e=3, n=100 * 1024) {
+    let r = Lr(t, e);
+    return hE(r) > n ? i0(t, e - 1, n) : r
+}
+function a0(t, e, n=1 / 0, r=1 / 0, a=Mh()) {
+    let[i,o] = a;
+    if (e === null || ["number", "boolean", "string"].includes(typeof e) && !vh(e))
+        return e;
+    let s = mE(t, e);
+    if (!s.startsWith("[object "))
+        return s;
+    if (e.__sentry_skip_normalization__)
+        return e;
+    if (n === 0)
+        return s.replace("object ", "");
+    if (i(e))
+        return "[Circular ~]";
+    let u = e;
+    if (u && typeof u.toJSON == "function")
+        try {
+            let m = u.toJSON();
+            return a0("", m, n - 1, r, a)
+        } catch {}
+    let l = Array.isArray(e) ? [] : {}
+        , c = 0
+        , p = Zd(e);
+    for (let m in p) {
+        if (!Object.prototype.hasOwnProperty.call(p, m))
+            continue;
+        if (c >= r) {
+            l[m] = "[MaxProperties ~]";
+            break
+        }
+        let g = p[m];
+        l[m] = a0(m, g, n - 1, r, a),
+            c += 1
+    }
+    return o(e),
+        l
+}
+function mE(t, e) {
+    try {
+        return t === "domain" && e && typeof e == "object" && e._events ? "[Domain]" : t === "domainEmitter" ? "[DomainEmitter]" : typeof window < "u" && e === window ? "[Window]" : yh(e) ? "[SyntheticEvent]" : typeof e == "number" && e !== e ? "[NaN]" : e === void 0 ? "[undefined]" : typeof e == "function" ? `[Function: ${Jn(e)}]` : typeof e == "symbol" ? `[${String(e)}]` : typeof e == "bigint" ? `[BigInt: ${String(e)}]` : `[object ${Object.getPrototypeOf(e).constructor.name}]`
+    } catch (n) {
+        return `**non-serializable** (${n})`
+    }
+}
+function fE(t) {
+    return ~-encodeURI(t).split(/%..|./).length
+}
+function hE(t) {
+    return fE(JSON.stringify(t))
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Sn(t) {
+    return new sr(e=>{
+            e(t)
+        }
+    )
+}
+function Ho(t) {
+    return new sr((e,n)=>{
+            n(t)
+        }
+    )
+}
+var sr = class t {
+        _state = 0;
+        _handlers = [];
+        _value;
+        constructor(e) {
+            try {
+                e(this._resolve, this._reject)
+            } catch (n) {
+                this._reject(n)
+            }
+        }
+        then(e, n) {
+            return new t((r,a)=>{
+                    this._handlers.push([!1, i=>{
+                        if (!e)
+                            r(i);
+                        else
+                            try {
+                                r(e(i))
+                            } catch (o) {
+                                a(o)
+                            }
+                    }
+                        , i=>{
+                            if (!n)
+                                a(i);
+                            else
+                                try {
+                                    r(n(i))
+                                } catch (o) {
+                                    a(o)
+                                }
+                        }
+                    ]),
+                        this._executeHandlers()
+                }
+            )
+        }
+        catch(e) {
+            return this.then(n=>n, e)
+        }
+        finally(e) {
+            return new t((n,r)=>{
+                    let a, i;
+                    return this.then(o=>{
+                            i = !1,
+                                a = o,
+                            e && e()
+                        }
+                        , o=>{
+                            i = !0,
+                                a = o,
+                            e && e()
+                        }
+                    ).then(()=>{
+                            if (i) {
+                                r(a);
+                                return
+                            }
+                            n(a)
+                        }
+                    )
+                }
+            )
+        }
+        _resolve = e=>{
+            this._setResult(1, e)
+        }
+        ;
+        _reject = e=>{
+            this._setResult(2, e)
+        }
+        ;
+        _setResult = (e,n)=>{
+            if (this._state === 0) {
+                if (hi(n)) {
+                    n.then(this._resolve, this._reject);
+                    return
+                }
+                this._state = e,
+                    this._value = n,
+                    this._executeHandlers()
+            }
+        }
+        ;
+        _executeHandlers = ()=>{
+            if (this._state === 0)
+                return;
+            let e = this._handlers.slice();
+            this._handlers = [],
+                e.forEach(n=>{
+                        n[0] || (this._state === 1 && n[1](this._value),
+                        this._state === 2 && n[2](this._value),
+                            n[0] = !0)
+                    }
+                )
+        }
+    }
+;
+function Rh(t) {
+    let e = [];
+    function n() {
+        return t === void 0 || e.length < t
+    }
+    function r(o) {
+        return e.splice(e.indexOf(o), 1)[0]
+    }
+    function a(o) {
+        if (!n())
+            return Ho(new Tt("Not adding Promise due to buffer limit reached."));
+        let s = o();
+        return e.indexOf(s) === -1 && e.push(s),
+            s.then(()=>r(s)).then(null, ()=>r(s).then(null, ()=>{}
+            )),
+            s
+    }
+    function i(o) {
+        return new sr((s,u)=>{
+                let l = e.length;
+                if (!l)
+                    return s(!0);
+                let c = setTimeout(()=>{
+                        o && o > 0 && s(!1)
+                    }
+                    , o);
+                e.forEach(p=>{
+                        Sn(p).then(()=>{
+                                --l || (clearTimeout(c),
+                                    s(!0))
+                            }
+                            , u)
+                    }
+                )
+            }
+        )
+    }
+    return {
+        $: e,
+        add: a,
+        drain: i
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var bE = ["fatal", "error", "warning", "log", "info", "debug"];
+function Oh(t) {
+    return t === "warn" ? "warning" : bE.includes(t) ? t : "log"
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var s0 = {
     nowSeconds: ()=>Date.now() / 1e3
@@ -142,6 +934,203 @@ var Eu, DF = (()=>{
     }
 )();
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var PF = new RegExp("^[ \\t]*([0-9a-f]{32})?-?([0-9a-f]{16})?-?([01])?[ \\t]*$");
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Ia(t, e=[]) {
+    return [t, e]
+}
+function Nh(t, e) {
+    let[n,r] = t;
+    return [n, [...r, e]]
+}
+function c0(t, e) {
+    t[1].forEach(r=>{
+            let a = r[0].type;
+            e(r, a)
+        }
+    )
+}
+function l0(t, e) {
+    return (e || new TextEncoder).encode(t)
+}
+function Cu(t, e) {
+    let[n,r] = t
+        , a = JSON.stringify(n);
+    function i(o) {
+        typeof a == "string" ? a = typeof o == "string" ? a + o : [l0(a, e), o] : a.push(typeof o == "string" ? l0(o, e) : o)
+    }
+    for (let o of r) {
+        let[s,u] = o;
+        i(`
+${JSON.stringify(s)}
+`),
+            i(typeof u == "string" || u instanceof Uint8Array ? u : JSON.stringify(u))
+    }
+    return typeof a == "string" ? a : yE(a)
+}
+function yE(t) {
+    let e = t.reduce((a,i)=>a + i.length, 0)
+        , n = new Uint8Array(e)
+        , r = 0;
+    for (let a of t)
+        n.set(a, r),
+            r += a.length;
+    return n
+}
+function Uh(t, e) {
+    let n = typeof t.data == "string" ? l0(t.data, e) : t.data;
+    return [Ba({
+        type: "attachment",
+        length: n.length,
+        filename: t.filename,
+        content_type: t.contentType,
+        attachment_type: t.attachmentType
+    }), n]
+}
+var vE = {
+    session: "session",
+    sessions: "session",
+    attachment: "attachment",
+    transaction: "transaction",
+    event: "error",
+    client_report: "internal",
+    user_report: "default"
+};
+function d0(t) {
+    return vE[t]
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function qh(t, e, n) {
+    let r = [{
+        type: "client_report"
+    }, {
+        timestamp: n || $r(),
+        discarded_events: t
+    }];
+    return Ia(e ? {
+        dsn: e
+    } : {}, [r])
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var SE = 60 * 1e3;
+function xE(t, e=Date.now()) {
+    let n = parseInt(`${t}`, 10);
+    if (!isNaN(n))
+        return n * 1e3;
+    let r = Date.parse(`${t}`);
+    return isNaN(r) ? SE : r - e
+}
+function EE(t, e) {
+    return t[e] || t.all || 0
+}
+function jh(t, e, n=Date.now()) {
+    return EE(t, e) > n
+}
+function Hh(t, {statusCode: e, headers: n}, r=Date.now()) {
+    let a = {
+        ...t
+    }
+        , i = n && n["x-sentry-rate-limits"]
+        , o = n && n["retry-after"];
+    if (i)
+        for (let s of i.trim().split(",")) {
+            let[u,l] = s.split(":", 2)
+                , c = parseInt(u, 10)
+                , p = (isNaN(c) ? 60 : c) * 1e3;
+            if (!l)
+                a.all = r + p;
+            else
+                for (let m of l.split(";"))
+                    a[m] = r + p
+        }
+    else
+        o ? a.all = r + xE(o, r) : e === 429 && (a.all = r + 60 * 1e3);
+    return a
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Wh(t) {
+    return t[0]
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function p0(t) {
+    let e = u0()
+        , n = {
+        sid: kr(),
+        init: !0,
+        timestamp: e,
+        started: e,
+        duration: 0,
+        status: "ok",
+        errors: 0,
+        ignoreDuration: !1,
+        toJSON: ()=>CE(n)
+    };
+    return t && ur(n, t),
+        n
+}
+function ur(t, e={}) {
+    if (e.user && (!t.ipAddress && e.user.ip_address && (t.ipAddress = e.user.ip_address),
+    !t.did && !e.did && (t.did = e.user.id || e.user.email || e.user.username)),
+        t.timestamp = e.timestamp || u0(),
+    e.ignoreDuration && (t.ignoreDuration = e.ignoreDuration),
+    e.sid && (t.sid = e.sid.length === 32 ? e.sid : kr()),
+    e.init !== void 0 && (t.init = e.init),
+    !t.did && e.did && (t.did = `${e.did}`),
+    typeof e.started == "number" && (t.started = e.started),
+        t.ignoreDuration)
+        t.duration = void 0;
+    else if (typeof e.duration == "number")
+        t.duration = e.duration;
+    else {
+        let n = t.timestamp - t.started;
+        t.duration = n >= 0 ? n : 0
+    }
+    e.release && (t.release = e.release),
+    e.environment && (t.environment = e.environment),
+    !t.ipAddress && e.ipAddress && (t.ipAddress = e.ipAddress),
+    !t.userAgent && e.userAgent && (t.userAgent = e.userAgent),
+    typeof e.errors == "number" && (t.errors = e.errors),
+    e.status && (t.status = e.status)
+}
+function g0(t, e) {
+    let n = {};
+    e ? n = {
+        status: e
+    } : t.status === "ok" && (n = {
+        status: "exited"
+    }),
+        ur(t, n)
+}
+function CE(t) {
+    return Ba({
+        sid: `${t.sid}`,
+        init: t.init,
+        started: new Date(t.started * 1e3).toISOString(),
+        timestamp: new Date(t.timestamp * 1e3).toISOString(),
+        status: t.status,
+        errors: t.errors,
+        did: typeof t.did == "number" || typeof t.did == "string" ? `${t.did}` : void 0,
+        duration: t.duration,
+        attrs: {
+            release: t.release,
+            environment: t.environment,
+            ip_address: t.ipAddress,
+            user_agent: t.userAgent
+        }
+    })
+}
 
 var Kh = 100
     , Nn = class t {
@@ -458,98 +1447,14 @@ var Kh = 100
     }
 ;
 
-function kr() {
-    if (crypto && crypto.randomUUID)
-        return crypto.randomUUID().replace(/-/g, "");
-    let t = crypto && crypto.getRandomValues ? ()=>crypto.getRandomValues(new Uint8Array(1))[0] : ()=>Math.random() * 16;
-    return ([1e7] + 1e3 + 4e3 + 8e3 + 1e11).replace(/[018]/g, e=>(e ^ (t() & 15) >> e / 4).toString(16))
+function Gh() {
+    return bi("globalEventProcessors", ()=>[])
 }
-function xu(t) {
-    if (!t)
-        return {};
-    let e = t.match(/^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/);
-    if (!e)
-        return {};
-    let n = e[6] || ""
-        , r = e[8] || "";
-    return {
-        host: e[4],
-        path: e[5],
-        protocol: e[2],
-        relative: e[5] + n + r
-    }
+function lr(t) {
+    Gh().push(t)
 }
 
-
-
-function p0(t) {
-    let e = u0()
-        , n = {
-        sid: kr(),
-        init: !0,
-        timestamp: e,
-        started: e,
-        duration: 0,
-        status: "ok",
-        errors: 0,
-        ignoreDuration: !1,
-        toJSON: ()=>CE(n)
-    };
-    return t && ur(n, t),
-        n
-}
-function ur(t, e={}) {
-    if (e.user && (!t.ipAddress && e.user.ip_address && (t.ipAddress = e.user.ip_address),
-    !t.did && !e.did && (t.did = e.user.id || e.user.email || e.user.username)),
-        t.timestamp = e.timestamp || u0(),
-    e.ignoreDuration && (t.ignoreDuration = e.ignoreDuration),
-    e.sid && (t.sid = e.sid.length === 32 ? e.sid : kr()),
-    e.init !== void 0 && (t.init = e.init),
-    !t.did && e.did && (t.did = `${e.did}`),
-    typeof e.started == "number" && (t.started = e.started),
-        t.ignoreDuration)
-        t.duration = void 0;
-    else if (typeof e.duration == "number")
-        t.duration = e.duration;
-    else {
-        let n = t.timestamp - t.started;
-        t.duration = n >= 0 ? n : 0
-    }
-    e.release && (t.release = e.release),
-    e.environment && (t.environment = e.environment),
-    !t.ipAddress && e.ipAddress && (t.ipAddress = e.ipAddress),
-    !t.userAgent && e.userAgent && (t.userAgent = e.userAgent),
-    typeof e.errors == "number" && (t.errors = e.errors),
-    e.status && (t.status = e.status)
-}
-function g0(t, e) {
-    let n = {};
-    e ? n = {
-        status: e
-    } : t.status === "ok" && (n = {
-        status: "exited"
-    }),
-        ur(t, n)
-}
-function CE(t) {
-    return Ba({
-        sid: `${t.sid}`,
-        init: t.init,
-        started: new Date(t.started * 1e3).toISOString(),
-        timestamp: new Date(t.timestamp * 1e3).toISOString(),
-        status: t.status,
-        errors: t.errors,
-        did: typeof t.did == "number" || typeof t.did == "string" ? `${t.did}` : void 0,
-        duration: t.duration,
-        attrs: {
-            release: t.release,
-            environment: t.environment,
-            ip_address: t.ipAddress,
-            user_agent: t.userAgent
-        }
-    })
-}
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var m0 = 4
     , wE = 100
@@ -788,10 +1693,6 @@ function vi(t) {
         n
 }
 
-function Ih() {
-    return !1
-}
-
 function Le() {
     let t = Wo();
     return (!$h(t) || Un(t).isOlderThan(m0)) && wu(t, new _r),
@@ -825,6 +1726,8 @@ function wu(t, e) {
     return n.hub = e,
         !0
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function Si(t, e) {
     return Le().captureException(t, {
@@ -877,167 +1780,7 @@ function Ru(t, e) {
     }, e)
 }
 
-
-function e4(t) {
-    let e = {};
-    return t.forEach(n=>{
-            e[n.name] = n,
-            Zh.indexOf(n.name) === -1 && (n.setupOnce(lr, Le),
-                Zh.push(n.name),
-            !1 && Se.log(`Integration installed: ${n.name}`))
-        }
-    ),
-        e
-}
-
-//////////////////////////////////////////////////////////////
-
-
-var Tt = class extends Error {
-        constructor(n) {
-            super(n);
-            this.message = n;
-            this.name = new.target.prototype.constructor.name,
-                Object.setPrototypeOf(this, new.target.prototype)
-        }
-        name
-    }
-;
-var eE = /^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/;
-function tE(t) {
-    return t === "http" || t === "https"
-}
-function Fa(t, e=!1) {
-    let {host: n, path: r, pass: a, port: i, projectId: o, protocol: s, publicKey: u} = t;
-    return `${s}://${u}${e && a ? `:${a}` : ""}@${n}${i ? `:${i}` : ""}/${r && `${r}/`}${o}`
-}
-
-
-function nE(t) {
-    let e = eE.exec(t);
-    if (!e)
-        throw new Tt(`Invalid Sentry Dsn: ${t}`);
-    let[n,r,a="",i,o="",s] = e.slice(1)
-        , u = ""
-        , l = s
-        , c = l.split("/");
-    if (c.length > 1 && (u = c.slice(0, -1).join("/"),
-        l = c.pop()),
-        l) {
-        let p = l.match(/^\d+/);
-        p && (l = p[0])
-    }
-    return xh({
-        host: i,
-        pass: a,
-        path: u,
-        projectId: l,
-        port: o,
-        protocol: n,
-        publicKey: r
-    })
-}
-function xh(t) {
-    return {
-        protocol: t.protocol,
-        publicKey: t.publicKey || "",
-        pass: t.pass || "",
-        host: t.host,
-        port: t.port || "",
-        path: t.path || "",
-        projectId: t.projectId
-    }
-}
-function rE(t) {
-    if (!!1)
-        return;
-    let {port: e, projectId: n, protocol: r} = t;
-    if (["protocol", "publicKey", "host", "projectId"].forEach(i=>{
-            if (!t[i])
-                throw new Tt(`Invalid Sentry Dsn: ${String(i)} missing`)
-        }
-    ),
-        !n.match(/^\d+$/))
-        throw new Tt(`Invalid Sentry Dsn: Invalid projectId ${n}`);
-    if (!tE(r))
-        throw new Tt(`Invalid Sentry Dsn: Invalid protocol ${r}`);
-    if (e && isNaN(parseInt(e, 10)))
-        throw new Tt(`Invalid Sentry Dsn: Invalid port ${e}`);
-    return !0
-}
-function vu(t) {
-    let e = typeof t == "string" ? nE(t) : xh(t);
-    return rE(e),
-        e
-}
-
-//////////////////////////////////////////////////
-
-var No = ["debug", "info", "warn", "error", "log", "assert", "trace"];
-function Vd(t) {
-    if (!("console"in it()))
-        return t();
-    let n = console
-        , r = {};
-    No.forEach(a=>{
-            let i = n[a] && n[a].__sentry_original__;
-            a in console && i && (r[a] = n[a],
-                n[a] = i)
-        }
-    );
-    try {
-        return t()
-    } finally {
-        Object.keys(r).forEach(a=>{
-                n[a] = r[a]
-            }
-        )
-    }
-}
-function Eh() {
-    let t = !1
-        , e = {
-        enable: ()=>{
-            t = !0
-        }
-        ,
-        disable: ()=>{
-            t = !1
-        }
-    };
-    return !1 ? No.forEach(n=>{
-            e[n] = (...r)=>{
-                t && Vd(()=>{}
-                )
-            }
-        }
-    ) : No.forEach(n=>{
-            e[n] = ()=>{}
-        }
-    ),
-        e
-}
-
-var Se;
-!1 ? Se = bi("logger", Eh) : Se = Eh();
-
-var aE = {};
-function it() {
-    return typeof window < "u" ? window : typeof self < "u" ? self : aE
-}
-function bi(t, e, n) {
-    let r = n || it()
-        , a = r.__SENTRY__ = r.__SENTRY__ || {};
-    return a[t] || (a[t] = e())
-}
-
-function Gh() {
-    return bi("globalEventProcessors", ()=>[])
-}
-function lr(t) {
-    Gh().push(t)
-}
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var AE = "7";
 function Vh(t) {
@@ -1079,240 +1822,7 @@ function f0(t, e) {
     return `${r}?${a}`
 }
 
-
-
-var fh = Object.prototype.toString;
-function Tu(t) {
-    switch (fh.call(t)) {
-        case "[object Error]":
-        case "[object Exception]":
-        case "[object DOMException]":
-            return !0;
-        default:
-            return or(t, Error)
-    }
-}
-function Io(t, e) {
-    return fh.call(t) === `[object ${e}]`
-}
-function yu(t) {
-    return Io(t, "ErrorEvent")
-}
-function hh(t) {
-    return Io(t, "DOMException")
-}
-function Dr(t) {
-    return Io(t, "String")
-}
-function Ro(t) {
-    return t === null || typeof t != "object" && typeof t != "function"
-}
-function Yn(t) {
-    return Io(t, "Object")
-}
-function Oo(t) {
-    return typeof Event < "u" && or(t, Event)
-}
-function bh(t) {
-    return !1
-}
-function Th(t) {
-    return Io(t, "RegExp")
-}
-function hi(t) {
-    return !!(t && t.then && typeof t.then == "function")
-}
-function yh(t) {
-    return Yn(t) && "nativeEvent"in t && "preventDefault"in t && "stopPropagation"in t
-}
-function vh(t) {
-    return typeof t == "number" && t !== t
-}
-function or(t, e) {
-    try {
-        return t instanceof e
-    } catch {
-        return !1
-    }
-}
-function zo(t, e) {
-    try {
-        let n = t, r = 5, a = 80, i = [], o = 0, s = 0, u = " > ", l = u.length, c;
-        for (; n && o++ < r && (c = Xx(n, e),
-            !(c === "html" || o > 1 && s + i.length * l + c.length >= a)); )
-            i.push(c),
-                s += c.length,
-                n = n.parentNode;
-        return i.reverse().join(u)
-    } catch {
-        return "<unknown>"
-    }
-}
-function Xx(t, e) {
-    let n = t, r = [], a, i, o, s, u;
-    if (!n || !n.tagName)
-        return "";
-    r.push(n.tagName.toLowerCase());
-    let l = e && e.length ? e.filter(p=>n.getAttribute(p)).map(p=>[p, n.getAttribute(p)]) : null;
-    if (l && l.length)
-        l.forEach(p=>{
-                r.push(`[${p[0]}="${p[1]}"]`)
-            }
-        );
-    else if (n.id && r.push(`#${n.id}`),
-        a = n.className,
-    a && Dr(a))
-        for (i = a.split(/\s+/),
-                 u = 0; u < i.length; u++)
-            r.push(`.${i[u]}`);
-    let c = ["type", "name", "title", "alt"];
-    for (u = 0; u < c.length; u++)
-        o = c[u],
-            s = n.getAttribute(o),
-        s && r.push(`[${o}="${s}"]`);
-    return r.join("")
-}
-function Sh() {
-    try {
-        return location.href
-    } catch {
-        return ""
-    }
-}
-
-
-function Ma(t, e=0) {
-    return typeof t != "string" || e === 0 || t.length <= e ? t : `${t.substr(0, e)}...`
-}
-function Yd(t, e) {
-    if (!Array.isArray(t))
-        return "";
-    let n = [];
-    for (let r = 0; r < t.length; r++) {
-        let a = t[r];
-        try {
-            n.push(String(a))
-        } catch {
-            n.push("[value cannot be serialized]")
-        }
-    }
-    return n.join(e)
-}
-function Su(t, e) {
-    return Dr(t) ? Th(e) ? e.test(t) : typeof e == "string" ? t.indexOf(e) !== -1 : !1 : !1
-}
-function Qn(t, e, n) {
-    if (!(e in t))
-        return;
-    let r = t[e]
-        , a = n(r);
-    if (typeof a == "function")
-        try {
-            Jd(a, r)
-        } catch {}
-    t[e] = a
-}
-function Uo(t, e, n) {
-    Object.defineProperty(t, e, {
-        value: n,
-        writable: !0,
-        configurable: !0
-    })
-}
-function Jd(t, e) {
-    let n = e.prototype || {};
-    t.prototype = e.prototype = n,
-        Uo(t, "__sentry_original__", e)
-}
-function Ti(t) {
-    return t.__sentry_original__
-}
-function Dh(t) {
-    return Object.keys(t).map(e=>`${encodeURIComponent(e)}=${encodeURIComponent(t[e])}`).join("&")
-}
-function Zd(t) {
-    if (Tu(t))
-        return {
-            message: t.message,
-            name: t.name,
-            stack: t.stack,
-            ...wh(t)
-        };
-    if (Oo(t)) {
-        let e = {
-            type: t.type,
-            target: Ch(t.target),
-            currentTarget: Ch(t.currentTarget),
-            ...wh(t)
-        };
-        return typeof CustomEvent < "u" && or(t, CustomEvent) && (e.detail = t.detail),
-            e
-    } else
-        return t
-}
-function Ch(t) {
-    try {
-        return bh(t) ? zo(t) : Object.prototype.toString.call(t)
-    } catch {
-        return "<unknown>"
-    }
-}
-function wh(t) {
-    if (typeof t == "object" && t !== null) {
-        let e = {};
-        for (let n in t)
-            Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-        return e
-    } else
-        return {}
-}
-function Ah(t, e=40) {
-    let n = Object.keys(Zd(t));
-    if (n.sort(),
-        !n.length)
-        return "[object has no keys]";
-    if (n[0].length >= e)
-        return Ma(n[0], e);
-    for (let r = n.length; r > 0; r--) {
-        let a = n.slice(0, r).join(", ");
-        if (!(a.length > e))
-            return r === n.length ? a : Ma(a, e)
-    }
-    return ""
-}
-function Ba(t) {
-    return Qd(t, new Map)
-}
-function Qd(t, e) {
-    if (Yn(t)) {
-        let n = e.get(t);
-        if (n !== void 0)
-            return n;
-        let r = {};
-        e.set(t, r);
-        for (let a of Object.keys(t))
-            typeof t[a] < "u" && (r[a] = Qd(t[a], e));
-        return r
-    }
-    if (Array.isArray(t)) {
-        let n = e.get(t);
-        if (n !== void 0)
-            return n;
-        let r = [];
-        return e.set(t, r),
-            t.forEach(a=>{
-                    r.push(Qd(a, e))
-                }
-            ),
-            r
-    }
-    return t
-}
-
-
-function Wh(t) {
-    return t[0]
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function Yh(t) {
     if (!t || !t.sdk)
@@ -1385,6 +1895,36 @@ function _E(t, e, n, r) {
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Zh = [];
+function Xh(t) {
+    return t.reduce((e,n)=>(e.every(r=>n.name !== r.name) && e.push(n),
+        e), [])
+}
+function h0(t) {
+    let e = t.defaultIntegrations && [...t.defaultIntegrations] || []
+        , n = t.integrations
+        , r = [...Xh(e)];
+    Array.isArray(n) ? r = [...r.filter(o=>n.every(s=>s.name !== o.name)), ...Xh(n)] : typeof n == "function" && (r = n(r),
+        r = Array.isArray(r) ? r : [r]);
+    let a = r.map(o=>o.name)
+        , i = "Debug";
+    return a.indexOf(i) !== -1 && r.push(...r.splice(a.indexOf(i), 1)),
+        r
+}
+
+function e4(t) {
+    let e = {};
+    return t.forEach(n=>{
+            e[n.name] = n,
+            Zh.indexOf(n.name) === -1 && (n.setupOnce(lr, Le),
+                Zh.push(n.name),
+            !1 && Se.log(`Integration installed: ${n.name}`))
+        }
+    ),
+        e
+}
 
 var t4 = "Not capturing exception because it's already been captured."
     , Go = class {
@@ -1696,280 +2236,66 @@ function FE(t) {
     return t
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function Ph() {
-    if (!("fetch"in it()))
-        return !1;
-    try {
-        return new Headers,
-            new Request("http://www.example.com"),
-            new Response,
-            !0
-    } catch {
-        return !1
+function b0(t, e) {
+    e.debug === !0 && !1 && Se.enable();
+    let n = Le()
+        , r = n.getScope();
+    r && r.update(e.initialScope);
+    let a = new t(e);
+    n.bindClient(a)
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var ME = 30;
+function $o(t, e, n=Rh(t.bufferSize || ME)) {
+    let r = {}
+        , a = o=>n.drain(o);
+    function i(o) {
+        let s = [];
+        if (c0(o, (p,m)=>{
+                let g = d0(m);
+                jh(r, g) ? t.recordDroppedEvent("ratelimit_backoff", g) : s.push(p)
+            }
+        ),
+        s.length === 0)
+            return Sn();
+        let u = Ia(o[0], s)
+            , l = p=>{
+            c0(u, (m,g)=>{
+                    t.recordDroppedEvent(p, d0(g))
+                }
+            )
+        }
+            , c = ()=>e({
+            body: Cu(u, t.textEncoder)
+        }).then(p=>{
+                p.statusCode !== void 0 && (p.statusCode < 200 || p.statusCode >= 300) && !1 && Se.warn(`Sentry responded with status code ${p.statusCode} to sent event.`),
+                    r = Hh(r, p)
+            }
+            , p=>{
+                !1 && Se.error("Failed while sending event:", p),
+                    l("network_error")
+            }
+        );
+        return n.add(c).then(p=>p, p=>{
+                if (p instanceof Tt)
+                    return !1 && Se.error("Skipped sending event due to full buffer"),
+                        l("queue_overflow"),
+                        Sn();
+                throw p
+            }
+        )
+    }
+    return {
+        send: i,
+        flush: a
     }
 }
-function Lh(t) {
-    return t && /^function fetch\(\)\s+\{\s+\[native code\]\s+\}$/.test(t.toString())
-}
-function _h() {
-    return !0
-}
-var Ar = it()
-    , qo = {}
-    , Fh = {};
-function sE(t) {
-    if (!Fh[t])
-        switch (Fh[t] = !0,
-            t) {
-            case "console":
-                uE();
-                break;
-            case "fetch":
-                lE();
-                break;
-            case "error":
-                pE();
-                break;
-            case "unhandledrejection":
-                gE();
-                break;
-            default:
-                !1 && Se.warn("unknown instrumentation type:", t);
-                return
-        }
-}
-function Zn(t, e) {
-    qo[t] = qo[t] || [],
-        qo[t].push(e),
-        sE(t)
-}
-function yi(t, e) {
-    if (!(!t || !qo[t]))
-        for (let n of qo[t] || [])
-            try {
-                n(e)
-            } catch (r) {
-                !1 && Se.error(`Error while triggering instrumentation handler.
-Type: ${t}
-Name: ${Jn(n)}
-Error:`, r)
-            }
-}
-function uE() {
-    "console"in Ar && No.forEach(function(t) {
-        t in console && Qn(console, t, function(e) {
-            return function(...n) {
-                yi("console", {
-                    args: n,
-                    level: t
-                }),
-                e && e.apply(console, n)
-            }
-        })
-    })
-}
-function lE() {
-    _h() && Qn(Ar, "fetch", function(t) {
-        return function(...e) {
-            let n = {
-                args: e,
-                fetchData: {
-                    method: cE(e),
-                    url: dE(e)
-                },
-                startTimestamp: Date.now()
-            };
-            return yi("fetch", {
-                ...n
-            }),
-                t.apply(Ar, e).then(r=>(yi("fetch", {
-                        ...n,
-                        endTimestamp: Date.now(),
-                        response: r
-                    }),
-                        r), r=>{
-                        throw yi("fetch", {
-                            ...n,
-                            endTimestamp: Date.now(),
-                            error: r
-                        }),
-                            r
-                    }
-                )
-        }
-    })
-}
-function cE(t=[]) {
-    return "Request"in Ar && or(t[0], Request) && t[0].method ? String(t[0].method).toUpperCase() : t[1] && t[1].method ? String(t[1].method).toUpperCase() : "GET"
-}
-function dE(t=[]) {
-    return typeof t[0] == "string" ? t[0] : "Request"in Ar && or(t[0], Request) ? t[0].url : String(t[0])
-}
-var t0 = null;
-function pE() {
-    t0 = Ar.onerror,
-        Ar.onerror = function(t, e, n, r, a) {
-            return yi("error", {
-                column: r,
-                error: a,
-                line: n,
-                msg: t,
-                url: e
-            }),
-                t0 ? t0.apply(this, arguments) : !1
-        }
-}
-var n0 = null;
-function gE() {
-    n0 = Ar.onunhandledrejection,
-        Ar.onunhandledrejection = function(t) {
-            return yi("unhandledrejection", t),
-                n0 ? n0.apply(this, arguments) : !0
-        }
-}
 
-
-var x0 = "Breadcrumbs"
-    , Vr = class t {
-        static id = x0;
-        name = t.id;
-        options;
-        constructor(e) {
-            this.options = {
-                console: !0,
-                dom: !0,
-                fetch: !0,
-                history: !0,
-                sentry: !0,
-                xhr: !0,
-                ...e
-            }
-        }
-        setupOnce() {
-            this.options.console && Zn("console", VE),
-            this.options.dom && Zn("dom", $E(this.options.dom)),
-            this.options.xhr && Zn("xhr", YE),
-            this.options.fetch && Zn("fetch", QE),
-            this.options.history && Zn("history", JE)
-        }
-    }
-;
-function $E(t) {
-    function e(n) {
-        let r, a = typeof t == "object" ? t.serializeAttribute : void 0;
-        typeof a == "string" && (a = [a]);
-        try {
-            r = n.event.target ? zo(n.event.target, a) : zo(n.event, a)
-        } catch {
-            r = "<unknown>"
-        }
-        r.length !== 0 && Le().addBreadcrumb({
-            category: `ui.${n.name}`,
-            message: r
-        }, {
-            event: n.event,
-            name: n.name,
-            global: n.global
-        })
-    }
-    return e
-}
-
-var bE = ["fatal", "error", "warning", "log", "info", "debug"];
-function Oh(t) {
-    return t === "warn" ? "warning" : bE.includes(t) ? t : "log"
-}
-
-function VE(t) {
-    let e = {
-        category: "console",
-        data: {
-            arguments: t.args,
-            logger: "console"
-        },
-        level: Oh(t.level),
-        message: Yd(t.args, " ")
-    };
-    if (t.level === "assert")
-        if (t.args[0] === !1)
-            e.message = `Assertion failed: ${Yd(t.args.slice(1), " ") || "console.assert"}`,
-                e.data.arguments = t.args.slice(1);
-        else
-            return;
-    Le().addBreadcrumb(e, {
-        input: t.args,
-        level: t.level
-    })
-}
-function YE(t) {
-    if (t.endTimestamp) {
-        if (t.xhr.__sentry_own_request__)
-            return;
-        let {method: e, url: n, status_code: r, body: a} = t.xhr.__sentry_xhr__ || {};
-        Le().addBreadcrumb({
-            category: "xhr",
-            data: {
-                method: e,
-                url: n,
-                status_code: r
-            },
-            type: "http"
-        }, {
-            xhr: t.xhr,
-            input: a
-        });
-        return
-    }
-}
-function QE(t) {
-    t.endTimestamp && (t.fetchData.url.match(/sentry_key/) && t.fetchData.method === "POST" || (t.error ? Le().addBreadcrumb({
-        category: "fetch",
-        data: t.fetchData,
-        level: "error",
-        type: "http"
-    }, {
-        data: t.error,
-        input: t.args
-    }) : Le().addBreadcrumb({
-        category: "fetch",
-        data: {
-            ...t.fetchData,
-            status_code: t.response.status
-        },
-        type: "http"
-    }, {
-        input: t.args,
-        response: t.response
-    })))
-}
-function JE(t) {
-    let e = it()
-        , n = t.from
-        , r = t.to
-        , a = xu(e.location.href)
-        , i = xu(n)
-        , o = xu(r);
-    i.path || (i = a),
-    a.protocol === o.protocol && a.host === o.host && (r = o.relative),
-    a.protocol === i.protocol && a.host === i.host && (n = i.relative),
-        Le().addBreadcrumb({
-            category: "navigation",
-            data: {
-                from: n,
-                to: r
-            }
-        })
-}
-
-var pd = Object.defineProperty;
-var eu = (t,e)=>{
-    for (var n in e)
-        pd(t, n, {
-            get: e[n],
-            enumerable: !0
-        })
-};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var Ei = "7.7.0";
 var za = {};
@@ -1977,6 +2303,8 @@ eu(za, {
     FunctionToString: ()=>Ra,
     InboundFilters: ()=>Oa
 });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var n4, Ra = class t {
         static id = "FunctionToString";
@@ -1991,55 +2319,7 @@ var n4, Ra = class t {
     }
 ;
 
-
-
-function Bh(t) {
-    return t.exception && t.exception.values ? t.exception.values[0] : void 0
-}
-function Pr(t) {
-    let {message: e, event_id: n} = t;
-    if (e)
-        return e;
-    let r = Bh(t);
-    return r ? r.type && r.value ? `${r.type}: ${r.value}` : r.type || r.value || n || "<unknown>" : n || "<unknown>"
-}
-function jo(t, e, n) {
-    let r = t.exception = t.exception || {}
-        , a = r.values = r.values || []
-        , i = a[0] = a[0] || {};
-    i.value || (i.value = e || ""),
-    i.type || (i.type = n || "Error")
-}
-function Gr(t, e) {
-    let n = Bh(t);
-    if (!n)
-        return;
-    let r = {
-        type: "generic",
-        handled: !0
-    }
-        , a = n.mechanism;
-    if (n.mechanism = {
-        ...r,
-        ...a,
-        ...e
-    },
-    e && "data"in e) {
-        let i = {
-            ...a && a.data,
-            ...e.data
-        };
-        n.mechanism.data = i
-    }
-}
-function r0(t) {
-    if (t && t.__sentry_captured__)
-        return !0;
-    try {
-        Uo(t, "__sentry_captured__", !0)
-    } catch {}
-    return !1
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var BE = [/^Script error\.?$/, /^Javascript error: Script error\.? on line 0$/]
     , Oa = class t {
@@ -2144,328 +2424,7 @@ function Ou(t) {
     }
 }
 
-
-var C0 = it()
-    , Ci = class extends Go {
-        constructor(e) {
-            e._metadata = e._metadata || {},
-                e._metadata.sdk = e._metadata.sdk || {
-                    name: "sentry.javascript.browser",
-                    packages: [{
-                        name: "npm:@sentry/browser",
-                        version: Ei
-                    }],
-                    version: Ei
-                },
-                super(e),
-            e.sendClientReports && C0.document && C0.document.addEventListener("visibilitychange", ()=>{
-                    C0.document.visibilityState === "hidden" && this._flushOutcomes()
-                }
-            )
-        }
-        eventFromException(e, n) {
-            return r4(this._options.stackParser, e, n, this._options.attachStacktrace)
-        }
-        eventFromMessage(e, n="info", r) {
-            return a4(this._options.stackParser, e, n, r, this._options.attachStacktrace)
-        }
-        sendEvent(e, n) {
-            let r = this.getIntegrationById(x0);
-            r && r.options && r.options.sentry && Le().addBreadcrumb({
-                category: `sentry.${e.type === "transaction" ? "transaction" : "event"}`,
-                event_id: e.event_id,
-                level: e.level,
-                message: Pr(e)
-            }, {
-                event: e
-            }),
-                super.sendEvent(e, n)
-        }
-        _prepareEvent(e, n, r) {
-            return e.platform = e.platform || "javascript",
-                super._prepareEvent(e, n, r)
-        }
-        _flushOutcomes() {
-            let e = this._clearOutcomes();
-            if (e.length === 0) {
-                !1 && Se.log("No outcomes to send");
-                return
-            }
-            if (!this._dsn) {
-                !1 && Se.log("No dsn provided, will not send outcomes");
-                return
-            }
-            !1 && Se.log("Sending outcomes:", e);
-            let n = Ko(this._dsn, this._options)
-                , r = qh(e, this._options.tunnel && Fa(this._dsn));
-            try {
-                i4(n, Cu(r))
-            } catch (a) {
-                !1 && Se.error(a)
-            }
-        }
-    }
-;
-
-function qh(t, e, n) {
-    let r = [{
-        type: "client_report"
-    }, {
-        timestamp: n || $r(),
-        discarded_events: t
-    }];
-    return Ia(e ? {
-        dsn: e
-    } : {}, [r])
-}
-
-//////////////////////////////////////////////
-
-function Sn(t) {
-    return new sr(e=>{
-            e(t)
-        }
-    )
-}
-function Ho(t) {
-    return new sr((e,n)=>{
-            n(t)
-        }
-    )
-}
-var sr = class t {
-        _state = 0;
-        _handlers = [];
-        _value;
-        constructor(e) {
-            try {
-                e(this._resolve, this._reject)
-            } catch (n) {
-                this._reject(n)
-            }
-        }
-        then(e, n) {
-            return new t((r,a)=>{
-                    this._handlers.push([!1, i=>{
-                        if (!e)
-                            r(i);
-                        else
-                            try {
-                                r(e(i))
-                            } catch (o) {
-                                a(o)
-                            }
-                    }
-                        , i=>{
-                            if (!n)
-                                a(i);
-                            else
-                                try {
-                                    r(n(i))
-                                } catch (o) {
-                                    a(o)
-                                }
-                        }
-                    ]),
-                        this._executeHandlers()
-                }
-            )
-        }
-        catch(e) {
-            return this.then(n=>n, e)
-        }
-        finally(e) {
-            return new t((n,r)=>{
-                    let a, i;
-                    return this.then(o=>{
-                            i = !1,
-                                a = o,
-                            e && e()
-                        }
-                        , o=>{
-                            i = !0,
-                                a = o,
-                            e && e()
-                        }
-                    ).then(()=>{
-                            if (i) {
-                                r(a);
-                                return
-                            }
-                            n(a)
-                        }
-                    )
-                }
-            )
-        }
-        _resolve = e=>{
-            this._setResult(1, e)
-        }
-        ;
-        _reject = e=>{
-            this._setResult(2, e)
-        }
-        ;
-        _setResult = (e,n)=>{
-            if (this._state === 0) {
-                if (hi(n)) {
-                    n.then(this._resolve, this._reject);
-                    return
-                }
-                this._state = e,
-                    this._value = n,
-                    this._executeHandlers()
-            }
-        }
-        ;
-        _executeHandlers = ()=>{
-            if (this._state === 0)
-                return;
-            let e = this._handlers.slice();
-            this._handlers = [],
-                e.forEach(n=>{
-                        n[0] || (this._state === 1 && n[1](this._value),
-                        this._state === 2 && n[2](this._value),
-                            n[0] = !0)
-                    }
-                )
-        }
-    }
-;
-function Rh(t) {
-    let e = [];
-    function n() {
-        return t === void 0 || e.length < t
-    }
-    function r(o) {
-        return e.splice(e.indexOf(o), 1)[0]
-    }
-    function a(o) {
-        if (!n())
-            return Ho(new Tt("Not adding Promise due to buffer limit reached."));
-        let s = o();
-        return e.indexOf(s) === -1 && e.push(s),
-            s.then(()=>r(s)).then(null, ()=>r(s).then(null, ()=>{}
-            )),
-            s
-    }
-    function i(o) {
-        return new sr((s,u)=>{
-                let l = e.length;
-                if (!l)
-                    return s(!0);
-                let c = setTimeout(()=>{
-                        o && o > 0 && s(!1)
-                    }
-                    , o);
-                e.forEach(p=>{
-                        Sn(p).then(()=>{
-                                --l || (clearTimeout(c),
-                                    s(!0))
-                            }
-                            , u)
-                    }
-                )
-            }
-        )
-    }
-    return {
-        $: e,
-        add: a,
-        drain: i
-    }
-}
-
-
-function Mh() {
-    let t = typeof WeakSet == "function"
-        , e = t ? new WeakSet : [];
-    function n(a) {
-        if (t)
-            return e.has(a) ? !0 : (e.add(a),
-                !1);
-        for (let i = 0; i < e.length; i++)
-            if (e[i] === a)
-                return !0;
-        return e.push(a),
-            !1
-    }
-    function r(a) {
-        if (t)
-            e.delete(a);
-        else
-            for (let i = 0; i < e.length; i++)
-                if (e[i] === a) {
-                    e.splice(i, 1);
-                    break
-                }
-    }
-    return [n, r]
-}
-
-function Lr(t, e=1 / 0, n=1 / 0) {
-    try {
-        return a0("", t, e, n)
-    } catch (r) {
-        return {
-            ERROR: `**non-serializable** (${r})`
-        }
-    }
-}
-function i0(t, e=3, n=100 * 1024) {
-    let r = Lr(t, e);
-    return hE(r) > n ? i0(t, e - 1, n) : r
-}
-function a0(t, e, n=1 / 0, r=1 / 0, a=Mh()) {
-    let[i,o] = a;
-    if (e === null || ["number", "boolean", "string"].includes(typeof e) && !vh(e))
-        return e;
-    let s = mE(t, e);
-    if (!s.startsWith("[object "))
-        return s;
-    if (e.__sentry_skip_normalization__)
-        return e;
-    if (n === 0)
-        return s.replace("object ", "");
-    if (i(e))
-        return "[Circular ~]";
-    let u = e;
-    if (u && typeof u.toJSON == "function")
-        try {
-            let m = u.toJSON();
-            return a0("", m, n - 1, r, a)
-        } catch {}
-    let l = Array.isArray(e) ? [] : {}
-        , c = 0
-        , p = Zd(e);
-    for (let m in p) {
-        if (!Object.prototype.hasOwnProperty.call(p, m))
-            continue;
-        if (c >= r) {
-            l[m] = "[MaxProperties ~]";
-            break
-        }
-        let g = p[m];
-        l[m] = a0(m, g, n - 1, r, a),
-            c += 1
-    }
-    return o(e),
-        l
-}
-function mE(t, e) {
-    try {
-        return t === "domain" && e && typeof e == "object" && e._events ? "[Domain]" : t === "domainEmitter" ? "[DomainEmitter]" : typeof window < "u" && e === window ? "[Window]" : yh(e) ? "[SyntheticEvent]" : typeof e == "number" && e !== e ? "[NaN]" : e === void 0 ? "[undefined]" : typeof e == "function" ? `[Function: ${Jn(e)}]` : typeof e == "symbol" ? `[${String(e)}]` : typeof e == "bigint" ? `[BigInt: ${String(e)}]` : `[object ${Object.getPrototypeOf(e).constructor.name}]`
-    } catch (n) {
-        return `**non-serializable** (${n})`
-    }
-}
-function fE(t) {
-    return ~-encodeURI(t).split(/%..|./).length
-}
-function hE(t) {
-    return fE(JSON.stringify(t))
-}
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function v0(t, e) {
     let n = S0(t, e)
@@ -2592,81 +2551,335 @@ function y0(t, e, n, r) {
     return a
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-var wC = "cause"
-    , DC = 5
-    , Qr = class t {
-        static id = "LinkedErrors";
+var x0 = "Breadcrumbs"
+    , Vr = class t {
+        static id = x0;
         name = t.id;
-        _key;
-        _limit;
-        constructor(e={}) {
-            this._key = e.key || wC,
-                this._limit = e.limit || DC
+        options;
+        constructor(e) {
+            this.options = {
+                console: !0,
+                dom: !0,
+                fetch: !0,
+                history: !0,
+                sentry: !0,
+                xhr: !0,
+                ...e
+            }
         }
         setupOnce() {
-            let e = Le().getClient();
-            e && lr((n,r)=>{
-                    let a = Le().getIntegration(t);
-                    return a ? AC(e.getOptions().stackParser, a._key, a._limit, n, r) : n
-                }
-            )
+            this.options.console && Zn("console", VE),
+            this.options.dom && Zn("dom", $E(this.options.dom)),
+            this.options.xhr && Zn("xhr", YE),
+            this.options.fetch && Zn("fetch", QE),
+            this.options.history && Zn("history", JE)
         }
     }
 ;
-function AC(t, e, n, r, a) {
-    if (!r.exception || !r.exception.values || !a || !or(a.originalException, Error))
-        return r;
-    let i = g4(t, n, a.originalException, e);
-    return r.exception.values = [...i, ...r.exception.values],
-        r
-}
-function g4(t, e, n, r, a=[]) {
-    if (!or(n[r], Error) || a.length + 1 >= e)
-        return a;
-    let i = v0(t, n[r]);
-    return g4(t, e, n[r], r, [i, ...a])
+function $E(t) {
+    function e(n) {
+        let r, a = typeof t == "object" ? t.serializeAttribute : void 0;
+        typeof a == "string" && (a = [a]);
+        try {
+            r = n.event.target ? zo(n.event.target, a) : zo(n.event, a)
+        } catch {
+            r = "<unknown>"
+        }
+        r.length !== 0 && Le().addBreadcrumb({
+            category: `ui.${n.name}`,
+            message: r
+        }, {
+            event: n.event,
+            name: n.name,
+            global: n.global
+        })
+    }
+    return e
 }
 
-var m4 = it()
-    , Jr = class t {
-        static id = "HttpContext";
-        name = t.id;
-        setupOnce() {
-            lr(e=>{
-                    if (Le().getIntegration(t)) {
-                        if (!navigator && !location && !m4.document)
-                            return e;
-                        let n = e.request && e.request.url || location && location.href
-                            , {referrer: r} = m4.document || {}
-                            , {userAgent: a} = navigator || {}
-                            , i = {
-                            ...e.request && e.request.headers,
-                            ...r && {
-                                Referer: r
-                            },
-                            ...a && {
-                                "User-Agent": a
-                            }
-                        }
-                            , o = {
-                            ...n && {
-                                url: n
-                            },
-                            headers: i
-                        };
-                        return {
-                            ...e,
-                            request: o
-                        }
-                    }
-                    return e
+function VE(t) {
+    let e = {
+        category: "console",
+        data: {
+            arguments: t.args,
+            logger: "console"
+        },
+        level: Oh(t.level),
+        message: Yd(t.args, " ")
+    };
+    if (t.level === "assert")
+        if (t.args[0] === !1)
+            e.message = `Assertion failed: ${Yd(t.args.slice(1), " ") || "console.assert"}`,
+                e.data.arguments = t.args.slice(1);
+        else
+            return;
+    Le().addBreadcrumb(e, {
+        input: t.args,
+        level: t.level
+    })
+}
+function YE(t) {
+    if (t.endTimestamp) {
+        if (t.xhr.__sentry_own_request__)
+            return;
+        let {method: e, url: n, status_code: r, body: a} = t.xhr.__sentry_xhr__ || {};
+        Le().addBreadcrumb({
+            category: "xhr",
+            data: {
+                method: e,
+                url: n,
+                status_code: r
+            },
+            type: "http"
+        }, {
+            xhr: t.xhr,
+            input: a
+        });
+        return
+    }
+}
+function QE(t) {
+    t.endTimestamp && (t.fetchData.url.match(/sentry_key/) && t.fetchData.method === "POST" || (t.error ? Le().addBreadcrumb({
+        category: "fetch",
+        data: t.fetchData,
+        level: "error",
+        type: "http"
+    }, {
+        data: t.error,
+        input: t.args
+    }) : Le().addBreadcrumb({
+        category: "fetch",
+        data: {
+            ...t.fetchData,
+            status_code: t.response.status
+        },
+        type: "http"
+    }, {
+        input: t.args,
+        response: t.response
+    })))
+}
+function JE(t) {
+    let e = it()
+        , n = t.from
+        , r = t.to
+        , a = xu(e.location.href)
+        , i = xu(n)
+        , o = xu(r);
+    i.path || (i = a),
+    a.protocol === o.protocol && a.host === o.host && (r = o.relative),
+    a.protocol === i.protocol && a.host === i.host && (n = i.relative),
+        Le().addBreadcrumb({
+            category: "navigation",
+            data: {
+                from: n,
+                to: r
+            }
+        })
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Uu = it(), Nu;
+function E0() {
+    if (Nu)
+        return Nu;
+    if (Lh(fetch))
+        return Nu = fetch.bind(Uu);
+    let t = Uu.document
+        , e = fetch;
+    if (t && typeof t.createElement == "function")
+        try {
+            let n = t.createElement("iframe");
+            n.hidden = !0,
+                t.head.appendChild(n);
+            let r = n.contentWindow;
+            r && r.fetch && (e = r.fetch),
+                t.head.removeChild(n)
+        } catch (n) {
+            !1 && Se.warn("Could not create sandbox iframe for pure fetch check, bailing to window.fetch: ", n)
+        }
+    return Nu = e.bind(Uu)
+}
+function i4(t, e) {
+    Object.prototype.toString.call(Uu && navigator) === "[object Navigator]" && typeof navigator.sendBeacon == "function" ? navigator.sendBeacon.bind(navigator)(t, e) : Ph() && E0()(t, {
+        body: e,
+        method: "POST",
+        credentials: "omit",
+        keepalive: !0
+    }).then(null, i=>{
+            !1 && Se.error(i)
+        }
+    )
+}
+
+var C0 = it()
+    , Ci = class extends Go {
+        constructor(e) {
+            e._metadata = e._metadata || {},
+                e._metadata.sdk = e._metadata.sdk || {
+                    name: "sentry.javascript.browser",
+                    packages: [{
+                        name: "npm:@sentry/browser",
+                        version: Ei
+                    }],
+                    version: Ei
+                },
+                super(e),
+            e.sendClientReports && C0.document && C0.document.addEventListener("visibilitychange", ()=>{
+                    C0.document.visibilityState === "hidden" && this._flushOutcomes()
                 }
             )
         }
+        eventFromException(e, n) {
+            return r4(this._options.stackParser, e, n, this._options.attachStacktrace)
+        }
+        eventFromMessage(e, n="info", r) {
+            return a4(this._options.stackParser, e, n, r, this._options.attachStacktrace)
+        }
+        sendEvent(e, n) {
+            let r = this.getIntegrationById(x0);
+            r && r.options && r.options.sentry && Le().addBreadcrumb({
+                category: `sentry.${e.type === "transaction" ? "transaction" : "event"}`,
+                event_id: e.event_id,
+                level: e.level,
+                message: Pr(e)
+            }, {
+                event: e
+            }),
+                super.sendEvent(e, n)
+        }
+        _prepareEvent(e, n, r) {
+            return e.platform = e.platform || "javascript",
+                super._prepareEvent(e, n, r)
+        }
+        _flushOutcomes() {
+            let e = this._clearOutcomes();
+            if (e.length === 0) {
+                !1 && Se.log("No outcomes to send");
+                return
+            }
+            if (!this._dsn) {
+                !1 && Se.log("No dsn provided, will not send outcomes");
+                return
+            }
+            !1 && Se.log("Sending outcomes:", e);
+            let n = Ko(this._dsn, this._options)
+                , r = qh(e, this._options.tunnel && Fa(this._dsn));
+            try {
+                i4(n, Cu(r))
+            } catch (a) {
+                !1 && Se.error(a)
+            }
+        }
     }
 ;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Vo(t, e=E0()) {
+    function n(r) {
+        let a = {
+            body: r.body,
+            method: "POST",
+            referrerPolicy: "origin",
+            headers: t.headers,
+            ...t.fetchOptions
+        };
+        return e(t.url, a).then(i=>({
+            statusCode: i.status,
+            headers: {
+                "x-sentry-rate-limits": i.headers.get("X-Sentry-Rate-Limits"),
+                "retry-after": i.headers.get("Retry-After")
+            }
+        }))
+    }
+    return $o(t, n)
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var wi = "?"
+    , ZE = 10
+    , XE = 20
+    , eC = 30
+    , tC = 40
+    , nC = 50;
+function Yo(t, e, n, r) {
+    let a = {
+        filename: t,
+        function: e,
+        in_app: !0
+    };
+    return n !== void 0 && (a.lineno = n),
+    r !== void 0 && (a.colno = r),
+        a
+}
+var rC = /^\s*at (?:(.*?) ?\((?:address at )?)?((?:file|https?|blob|chrome-extension|address|native|eval|webpack|<anonymous>|[-a-z]+:|.*bundle|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i
+    , aC = /\((\S*)(?::(\d+))(?::(\d+))\)/
+    , iC = t=>{
+        let e = rC.exec(t);
+        if (e) {
+            if (e[2] && e[2].indexOf("eval") === 0) {
+                let i = aC.exec(e[2]);
+                i && (e[2] = i[1],
+                    e[3] = i[2],
+                    e[4] = i[3])
+            }
+            let[r,a] = u4(e[1] || wi, e[2]);
+            return Yo(a, r, e[3] ? +e[3] : void 0, e[4] ? +e[4] : void 0)
+        }
+    }
+    , w0 = [eC, iC]
+    , oC = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension|capacitor).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js)|\/[\w\-. /=]+)(?::(\d+))?(?::(\d+))?\s*$/i
+    , sC = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i
+    , uC = t=>{
+        let e = oC.exec(t);
+        if (e) {
+            if (e[3] && e[3].indexOf(" > eval") > -1) {
+                let i = sC.exec(e[3]);
+                i && (e[1] = e[1] || "eval",
+                    e[3] = i[1],
+                    e[4] = i[2],
+                    e[5] = "")
+            }
+            let r = e[3]
+                , a = e[1] || wi;
+            return [a,r] = u4(a, r),
+                Yo(r, a, e[4] ? +e[4] : void 0, e[5] ? +e[5] : void 0)
+        }
+    }
+    , D0 = [nC, uC]
+    , lC = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i
+    , cC = t=>{
+        let e = lC.exec(t);
+        return e ? Yo(e[2], e[1] || wi, +e[3], e[4] ? +e[4] : void 0) : void 0
+    }
+    , A0 = [tC, cC]
+    , dC = / line (\d+).*script (?:in )?(\S+)(?:: in function (\S+))?$/i
+    , pC = t=>{
+        let e = dC.exec(t);
+        return e ? Yo(e[2], e[3] || wi, +e[1]) : void 0
+    }
+    , o4 = [ZE, pC]
+    , gC = / line (\d+), column (\d+)\s*(?:in (?:<anonymous function: ([^>]+)>|([^)]+))\(.*\))? in (.*):\s*$/i
+    , mC = t=>{
+        let e = gC.exec(t);
+        return e ? Yo(e[5], e[3] || e[4] || wi, +e[1], +e[2]) : void 0
+    }
+    , s4 = [XE, mC]
+    , k0 = [w0, D0, A0]
+    , qu = e0(...k0)
+    , u4 = (t,e)=>{
+        let n = t.indexOf("safari-extension") !== -1
+            , r = t.indexOf("safari-web-extension") !== -1;
+        return n || r ? [t.indexOf("@") !== -1 ? t.split("@")[0] : wi, n ? `safari-extension:${e}` : `safari-web-extension:${e}`] : [t, e]
+    }
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var P0 = 0;
 function L0() {
@@ -2738,7 +2951,132 @@ eu(_0, {
     TryCatch: ()=>Yr
 });
 
-///////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var cr = class t {
+        static id = "GlobalHandlers";
+        name = t.id;
+        _options;
+        _installFunc = {
+            onerror: hC,
+            onunhandledrejection: bC
+        };
+        constructor(e) {
+            this._options = {
+                onerror: !0,
+                onunhandledrejection: !0,
+                ...e
+            }
+        }
+        setupOnce() {
+            let e = this._options;
+            for (let n in e) {
+                let r = this._installFunc[n];
+                r && e[n] && (vC(n),
+                    r(),
+                    this._installFunc[n] = void 0)
+            }
+        }
+    }
+;
+function hC() {
+    Zn("error", t=>{
+            let[e,n,r] = d4();
+            if (!e.getIntegration(cr))
+                return;
+            let {msg: a, url: i, line: o, column: s, error: u} = t;
+            if (L0() || u && u.__sentry_own_request__)
+                return;
+            let l = u === void 0 && Dr(a) ? yC(a, i, o, s) : l4(zu(n, u || a, void 0, r, !1), i, o, s);
+            l.level = "error",
+                c4(e, u, l, "onerror")
+        }
+    )
+}
+function bC() {
+    Zn("unhandledrejection", t=>{
+            let[e,n,r] = d4();
+            if (!e.getIntegration(cr))
+                return;
+            let a = t;
+            try {
+                "reason"in t ? a = t.reason : "detail"in t && "reason"in t.detail && (a = t.detail.reason)
+            } catch {}
+            if (L0() || a && a.__sentry_own_request__)
+                return !0;
+            let i = Ro(a) ? TC(a) : zu(n, a, void 0, r, !0);
+            i.level = "error",
+                c4(e, a, i, "onunhandledrejection")
+        }
+    )
+}
+function TC(t) {
+    return {
+        exception: {
+            values: [{
+                type: "UnhandledRejection",
+                value: `Non-Error promise rejection captured with value: ${String(t)}`
+            }]
+        }
+    }
+}
+function yC(t, e, n, r) {
+    let a = /^(?:[Uu]ncaught (?:exception: )?)?(?:((?:Eval|Internal|Range|Reference|Syntax|Type|URI|)Error): )?(.*)$/i
+        , i = yu(t) ? t.message : t
+        , o = "Error"
+        , s = i.match(a);
+    return s && (o = s[1],
+        i = s[2]),
+        l4({
+            exception: {
+                values: [{
+                    type: o,
+                    value: i
+                }]
+            }
+        }, e, n, r)
+}
+function l4(t, e, n, r) {
+    let a = t.exception = t.exception || {}
+        , i = a.values = a.values || []
+        , o = i[0] = i[0] || {}
+        , s = o.stacktrace = o.stacktrace || {}
+        , u = s.frames = s.frames || []
+        , l = isNaN(parseInt(r, 10)) ? void 0 : r
+        , c = isNaN(parseInt(n, 10)) ? void 0 : n
+        , p = Dr(e) && e.length > 0 ? e : Sh();
+    return u.length === 0 && u.push({
+        colno: l,
+        filename: p,
+        function: "?",
+        in_app: !0,
+        lineno: c
+    }),
+        t
+}
+function vC(t) {
+    !1 && Se.log(`Global Handler attached: ${t}`)
+}
+function c4(t, e, n, r) {
+    Gr(n, {
+        handled: !1,
+        type: r
+    }),
+        t.captureEvent(n, {
+            originalException: e
+        })
+}
+function d4() {
+    let t = Le()
+        , e = t.getClient()
+        , n = e && e.getOptions() || {
+        stackParser: ()=>[],
+        attachStacktrace: !1
+    };
+    return [t, n.stackParser, n.attachStacktrace]
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var SC = ["EventTarget", "Window", "Node", "ApplicationCache", "AudioTrackList", "ChannelMergerNode", "CryptoOperation", "EventSource", "FileReader", "HTMLUnknownElement", "IDBDatabase", "IDBRequest", "IDBTransaction", "KeyOperation", "MediaController", "MessagePort", "ModalWindow", "Notification", "SVGElementInstance", "Screen", "TextTrack", "TextTrackCue", "TextTrackList", "WebSocket", "WebSocketWorker", "Worker", "XMLHttpRequest", "XMLHttpRequestEventTarget", "XMLHttpRequestUpload"]
     , Yr = class t {
@@ -2864,194 +3202,166 @@ function CC(t) {
         }))
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var iE = 50;
-function e0(...t) {
-    let e = t.sort((n,r)=>n[0] - r[0]).map(n=>n[1]);
-    return (n,r=0)=>{
-        let a = [];
-        for (let i of n.split(`
-`).slice(r))
-            for (let o of e) {
-                let s = o(i);
-                if (s) {
-                    a.push(s);
-                    break
-                }
-            }
-        return oE(a)
-    }
-}
-function kh(t) {
-    return Array.isArray(t) ? e0(...t) : t
-}
-function oE(t) {
-    if (!t.length)
-        return [];
-    let e = t
-        , n = e[0].function || ""
-        , r = e[e.length - 1].function || "";
-    return (n.indexOf("captureMessage") !== -1 || n.indexOf("captureException") !== -1) && (e = e.slice(1)),
-    r.indexOf("sentryWrapped") !== -1 && (e = e.slice(0, -1)),
-        e.slice(0, iE).map(a=>({
-            ...a,
-            filename: a.filename || e[0].filename,
-            function: a.function || "?"
-        })).reverse()
-}
-var Xd = "<anonymous>";
-function Jn(t) {
-    try {
-        return !t || typeof t != "function" ? Xd : t.name || Xd
-    } catch {
-        return Xd
-    }
-}
-
-////////////////开始///////////////////
-
-
-var cr = class t {
-        static id = "GlobalHandlers";
+var wC = "cause"
+    , DC = 5
+    , Qr = class t {
+        static id = "LinkedErrors";
         name = t.id;
-        _options;
-        _installFunc = {
-            onerror: hC,
-            onunhandledrejection: bC
-        };
-        constructor(e) {
-            this._options = {
-                onerror: !0,
-                onunhandledrejection: !0,
-                ...e
-            }
+        _key;
+        _limit;
+        constructor(e={}) {
+            this._key = e.key || wC,
+                this._limit = e.limit || DC
         }
         setupOnce() {
-            let e = this._options;
-            for (let n in e) {
-                let r = this._installFunc[n];
-                r && e[n] && (vC(n),
-                    r(),
-                    this._installFunc[n] = void 0)
-            }
+            let e = Le().getClient();
+            e && lr((n,r)=>{
+                    let a = Le().getIntegration(t);
+                    return a ? AC(e.getOptions().stackParser, a._key, a._limit, n, r) : n
+                }
+            )
         }
     }
 ;
-function hC() {
-    Zn("error", t=>{
-            let[e,n,r] = d4();
-            if (!e.getIntegration(cr))
-                return;
-            let {msg: a, url: i, line: o, column: s, error: u} = t;
-            if (L0() || u && u.__sentry_own_request__)
-                return;
-            let l = u === void 0 && Dr(a) ? yC(a, i, o, s) : l4(zu(n, u || a, void 0, r, !1), i, o, s);
-            l.level = "error",
-                c4(e, u, l, "onerror")
-        }
-    )
+function AC(t, e, n, r, a) {
+    if (!r.exception || !r.exception.values || !a || !or(a.originalException, Error))
+        return r;
+    let i = g4(t, n, a.originalException, e);
+    return r.exception.values = [...i, ...r.exception.values],
+        r
 }
-function bC() {
-    Zn("unhandledrejection", t=>{
-            let[e,n,r] = d4();
-            if (!e.getIntegration(cr))
-                return;
-            let a = t;
-            try {
-                "reason"in t ? a = t.reason : "detail"in t && "reason"in t.detail && (a = t.detail.reason)
-            } catch {}
-            if (L0() || a && a.__sentry_own_request__)
-                return !0;
-            let i = Ro(a) ? TC(a) : zu(n, a, void 0, r, !0);
-            i.level = "error",
-                c4(e, a, i, "onunhandledrejection")
-        }
-    )
+function g4(t, e, n, r, a=[]) {
+    if (!or(n[r], Error) || a.length + 1 >= e)
+        return a;
+    let i = v0(t, n[r]);
+    return g4(t, e, n[r], r, [i, ...a])
 }
-function TC(t) {
-    return {
-        exception: {
-            values: [{
-                type: "UnhandledRejection",
-                value: `Non-Error promise rejection captured with value: ${String(t)}`
-            }]
+
+var m4 = it()
+    , Jr = class t {
+        static id = "HttpContext";
+        name = t.id;
+        setupOnce() {
+            lr(e=>{
+                    if (Le().getIntegration(t)) {
+                        if (!navigator && !location && !m4.document)
+                            return e;
+                        let n = e.request && e.request.url || location && location.href
+                            , {referrer: r} = m4.document || {}
+                            , {userAgent: a} = navigator || {}
+                            , i = {
+                            ...e.request && e.request.headers,
+                            ...r && {
+                                Referer: r
+                            },
+                            ...a && {
+                                "User-Agent": a
+                            }
+                        }
+                            , o = {
+                            ...n && {
+                                url: n
+                            },
+                            headers: i
+                        };
+                        return {
+                            ...e,
+                            request: o
+                        }
+                    }
+                    return e
+                }
+            )
         }
     }
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Zr = class t {
+        static id = "Dedupe";
+        name = t.id;
+        _previousEvent;
+        setupOnce(e, n) {
+            let r = a=>{
+                    let i = n().getIntegration(t);
+                    if (i) {
+                        try {
+                            if (kC(a, i._previousEvent))
+                                return !1 && Se.warn("Event dropped due to being a duplicate of previously captured event."),
+                                    null
+                        } catch {
+                            return i._previousEvent = a
+                        }
+                        return i._previousEvent = a
+                    }
+                    return a
+                }
+            ;
+            r.id = this.name,
+                e(r)
+        }
+    }
+;
+function kC(t, e) {
+    return e ? !!(PC(t, e) || LC(t, e)) : !1
 }
-function yC(t, e, n, r) {
-    let a = /^(?:[Uu]ncaught (?:exception: )?)?(?:((?:Eval|Internal|Range|Reference|Syntax|Type|URI|)Error): )?(.*)$/i
-        , i = yu(t) ? t.message : t
-        , o = "Error"
-        , s = i.match(a);
-    return s && (o = s[1],
-        i = s[2]),
-        l4({
-            exception: {
-                values: [{
-                    type: o,
-                    value: i
-                }]
-            }
-        }, e, n, r)
+function PC(t, e) {
+    let n = t.message
+        , r = e.message;
+    return !(!n && !r || n && !r || !n && r || n !== r || !T4(t, e) || !b4(t, e))
 }
-function l4(t, e, n, r) {
-    let a = t.exception = t.exception || {}
-        , i = a.values = a.values || []
-        , o = i[0] = i[0] || {}
-        , s = o.stacktrace = o.stacktrace || {}
-        , u = s.frames = s.frames || []
-        , l = isNaN(parseInt(r, 10)) ? void 0 : r
-        , c = isNaN(parseInt(n, 10)) ? void 0 : n
-        , p = Dr(e) && e.length > 0 ? e : Sh();
-    return u.length === 0 && u.push({
-        colno: l,
-        filename: p,
-        function: "?",
-        in_app: !0,
-        lineno: c
-    }),
-        t
+function LC(t, e) {
+    let n = f4(e)
+        , r = f4(t);
+    return !(!n || !r || n.type !== r.type || n.value !== r.value || !T4(t, e) || !b4(t, e))
 }
-function vC(t) {
-    !1 && Se.log(`Global Handler attached: ${t}`)
+function b4(t, e) {
+    let n = h4(t)
+        , r = h4(e);
+    if (!n && !r)
+        return !0;
+    if (n && !r || !n && r || (n = n,
+        r = r,
+    r.length !== n.length))
+        return !1;
+    for (let a = 0; a < r.length; a++) {
+        let i = r[a]
+            , o = n[a];
+        if (i.filename !== o.filename || i.lineno !== o.lineno || i.colno !== o.colno || i.function !== o.function)
+            return !1
+    }
+    return !0
 }
-function c4(t, e, n, r) {
-    Gr(n, {
-        handled: !1,
-        type: r
-    }),
-        t.captureEvent(n, {
-            originalException: e
-        })
+function T4(t, e) {
+    let n = t.fingerprint
+        , r = e.fingerprint;
+    if (!n && !r)
+        return !0;
+    if (n && !r || !n && r)
+        return !1;
+    n = n,
+        r = r;
+    try {
+        return n.join("") === r.join("")
+    } catch {
+        return !1
+    }
 }
-function d4() {
-    let t = Le()
-        , e = t.getClient()
-        , n = e && e.getOptions() || {
-        stackParser: ()=>[],
-        attachStacktrace: !1
-    };
-    return [t, n.stackParser, n.attachStacktrace]
+function f4(t) {
+    return t.exception && t.exception.values && t.exception.values[0]
 }
-
-
-////////////////结束///////////////////
-
-
-
-
-////////////////开始///////////////////
-
-function b0(t, e) {
-    e.debug === !0 && !1 && Se.enable();
-    let n = Le()
-        , r = n.getScope();
-    r && r.update(e.initialScope);
-    let a = new t(e);
-    n.bindClient(a)
+function h4(t) {
+    let e = t.exception;
+    if (e)
+        try {
+            return e.values[0].stacktrace.frames
+        } catch {
+            return
+        }
 }
-
-
 
 var F0 = [new za.InboundFilters, new za.FunctionToString, new Yr, new Vr, new cr, new Qr, new Zr, new Jr];
 function v4(t={}) {
@@ -3142,292 +3452,7 @@ var FC = {
     ..._0
 };
 
-
-
-
-var wi = "?"
-    , ZE = 10
-    , XE = 20
-    , eC = 30
-    , tC = 40
-    , nC = 50;
-function Yo(t, e, n, r) {
-    let a = {
-        filename: t,
-        function: e,
-        in_app: !0
-    };
-    return n !== void 0 && (a.lineno = n),
-    r !== void 0 && (a.colno = r),
-        a
-}
-var rC = /^\s*at (?:(.*?) ?\((?:address at )?)?((?:file|https?|blob|chrome-extension|address|native|eval|webpack|<anonymous>|[-a-z]+:|.*bundle|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i
-    , aC = /\((\S*)(?::(\d+))(?::(\d+))\)/
-    , iC = t=>{
-        let e = rC.exec(t);
-        if (e) {
-            if (e[2] && e[2].indexOf("eval") === 0) {
-                let i = aC.exec(e[2]);
-                i && (e[2] = i[1],
-                    e[3] = i[2],
-                    e[4] = i[3])
-            }
-            let[r,a] = u4(e[1] || wi, e[2]);
-            return Yo(a, r, e[3] ? +e[3] : void 0, e[4] ? +e[4] : void 0)
-        }
-    }
-    , w0 = [eC, iC]
-    , oC = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension|capacitor).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js)|\/[\w\-. /=]+)(?::(\d+))?(?::(\d+))?\s*$/i
-    , sC = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i
-    , uC = t=>{
-        let e = oC.exec(t);
-        if (e) {
-            if (e[3] && e[3].indexOf(" > eval") > -1) {
-                let i = sC.exec(e[3]);
-                i && (e[1] = e[1] || "eval",
-                    e[3] = i[1],
-                    e[4] = i[2],
-                    e[5] = "")
-            }
-            let r = e[3]
-                , a = e[1] || wi;
-            return [a,r] = u4(a, r),
-                Yo(r, a, e[4] ? +e[4] : void 0, e[5] ? +e[5] : void 0)
-        }
-    }
-    , D0 = [nC, uC]
-    , lC = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i
-    , cC = t=>{
-        let e = lC.exec(t);
-        return e ? Yo(e[2], e[1] || wi, +e[3], e[4] ? +e[4] : void 0) : void 0
-    }
-    , A0 = [tC, cC]
-    , dC = / line (\d+).*script (?:in )?(\S+)(?:: in function (\S+))?$/i
-    , pC = t=>{
-        let e = dC.exec(t);
-        return e ? Yo(e[2], e[3] || wi, +e[1]) : void 0
-    }
-    , o4 = [ZE, pC]
-    , gC = / line (\d+), column (\d+)\s*(?:in (?:<anonymous function: ([^>]+)>|([^)]+))\(.*\))? in (.*):\s*$/i
-    , mC = t=>{
-        let e = gC.exec(t);
-        return e ? Yo(e[5], e[3] || e[4] || wi, +e[1], +e[2]) : void 0
-    }
-    , s4 = [XE, mC]
-    , k0 = [w0, D0, A0]
-    , qu = e0(...k0)
-    , u4 = (t,e)=>{
-        let n = t.indexOf("safari-extension") !== -1
-            , r = t.indexOf("safari-web-extension") !== -1;
-        return n || r ? [t.indexOf("@") !== -1 ? t.split("@")[0] : wi, n ? `safari-extension:${e}` : `safari-web-extension:${e}`] : [t, e]
-    }
-;
-
-
-
-var ME = 30;
-function $o(t, e, n=Rh(t.bufferSize || ME)) {
-    let r = {}
-        , a = o=>n.drain(o);
-    function i(o) {
-        let s = [];
-        if (c0(o, (p,m)=>{
-                let g = d0(m);
-                jh(r, g) ? t.recordDroppedEvent("ratelimit_backoff", g) : s.push(p)
-            }
-        ),
-        s.length === 0)
-            return Sn();
-        let u = Ia(o[0], s)
-            , l = p=>{
-            c0(u, (m,g)=>{
-                    t.recordDroppedEvent(p, d0(g))
-                }
-            )
-        }
-            , c = ()=>e({
-            body: Cu(u, t.textEncoder)
-        }).then(p=>{
-                p.statusCode !== void 0 && (p.statusCode < 200 || p.statusCode >= 300) && !1 && Se.warn(`Sentry responded with status code ${p.statusCode} to sent event.`),
-                    r = Hh(r, p)
-            }
-            , p=>{
-                !1 && Se.error("Failed while sending event:", p),
-                    l("network_error")
-            }
-        );
-        return n.add(c).then(p=>p, p=>{
-                if (p instanceof Tt)
-                    return !1 && Se.error("Skipped sending event due to full buffer"),
-                        l("queue_overflow"),
-                        Sn();
-                throw p
-            }
-        )
-    }
-    return {
-        send: i,
-        flush: a
-    }
-}
-
-function Ia(t, e=[]) {
-    return [t, e]
-}
-function Nh(t, e) {
-    let[n,r] = t;
-    return [n, [...r, e]]
-}
-function c0(t, e) {
-    t[1].forEach(r=>{
-            let a = r[0].type;
-            e(r, a)
-        }
-    )
-}
-function l0(t, e) {
-    return (e || new TextEncoder).encode(t)
-}
-function Cu(t, e) {
-    let[n,r] = t
-        , a = JSON.stringify(n);
-    function i(o) {
-        typeof a == "string" ? a = typeof o == "string" ? a + o : [l0(a, e), o] : a.push(typeof o == "string" ? l0(o, e) : o)
-    }
-    for (let o of r) {
-        let[s,u] = o;
-        i(`
-${JSON.stringify(s)}
-`),
-            i(typeof u == "string" || u instanceof Uint8Array ? u : JSON.stringify(u))
-    }
-    return typeof a == "string" ? a : yE(a)
-}
-function yE(t) {
-    let e = t.reduce((a,i)=>a + i.length, 0)
-        , n = new Uint8Array(e)
-        , r = 0;
-    for (let a of t)
-        n.set(a, r),
-            r += a.length;
-    return n
-}
-function Uh(t, e) {
-    let n = typeof t.data == "string" ? l0(t.data, e) : t.data;
-    return [Ba({
-        type: "attachment",
-        length: n.length,
-        filename: t.filename,
-        content_type: t.contentType,
-        attachment_type: t.attachmentType
-    }), n]
-}
-var vE = {
-    session: "session",
-    sessions: "session",
-    attachment: "attachment",
-    transaction: "transaction",
-    event: "error",
-    client_report: "internal",
-    user_report: "default"
-};
-function d0(t) {
-    return vE[t]
-}
-
-
-
-
-var SE = 60 * 1e3;
-function xE(t, e=Date.now()) {
-    let n = parseInt(`${t}`, 10);
-    if (!isNaN(n))
-        return n * 1e3;
-    let r = Date.parse(`${t}`);
-    return isNaN(r) ? SE : r - e
-}
-function EE(t, e) {
-    return t[e] || t.all || 0
-}
-function jh(t, e, n=Date.now()) {
-    return EE(t, e) > n
-}
-function Hh(t, {statusCode: e, headers: n}, r=Date.now()) {
-    let a = {
-        ...t
-    }
-        , i = n && n["x-sentry-rate-limits"]
-        , o = n && n["retry-after"];
-    if (i)
-        for (let s of i.trim().split(",")) {
-            let[u,l] = s.split(":", 2)
-                , c = parseInt(u, 10)
-                , p = (isNaN(c) ? 60 : c) * 1e3;
-            if (!l)
-                a.all = r + p;
-            else
-                for (let m of l.split(";"))
-                    a[m] = r + p
-        }
-    else
-        o ? a.all = r + xE(o, r) : e === 429 && (a.all = r + 60 * 1e3);
-    return a
-}
-
-var Uu = it(), Nu;
-function E0() {
-    if (Nu)
-        return Nu;
-    if (Lh(fetch))
-        return Nu = fetch.bind(Uu);
-    let t = Uu.document
-        , e = fetch;
-    if (t && typeof t.createElement == "function")
-        try {
-            let n = t.createElement("iframe");
-            n.hidden = !0,
-                t.head.appendChild(n);
-            let r = n.contentWindow;
-            r && r.fetch && (e = r.fetch),
-                t.head.removeChild(n)
-        } catch (n) {
-            !1 && Se.warn("Could not create sandbox iframe for pure fetch check, bailing to window.fetch: ", n)
-        }
-    return Nu = e.bind(Uu)
-}
-function i4(t, e) {
-    Object.prototype.toString.call(Uu && navigator) === "[object Navigator]" && typeof navigator.sendBeacon == "function" ? navigator.sendBeacon.bind(navigator)(t, e) : Ph() && E0()(t, {
-        body: e,
-        method: "POST",
-        credentials: "omit",
-        keepalive: !0
-    }).then(null, i=>{
-            !1 && Se.error(i)
-        }
-    )
-}
-
-function Vo(t, e=E0()) {
-    function n(r) {
-        let a = {
-            body: r.body,
-            method: "POST",
-            referrerPolicy: "origin",
-            headers: t.headers,
-            ...t.fetchOptions
-        };
-        return e(t.url, a).then(i=>({
-            statusCode: i.status,
-            headers: {
-                "x-sentry-rate-limits": i.headers.get("X-Sentry-Rate-Limits"),
-                "retry-after": i.headers.get("Retry-After")
-            }
-        }))
-    }
-    return $o(t, n)
-}
-
-////////////////结束///////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var Na = {};
 eu(Na, {
@@ -3483,63 +3508,3 @@ eu(Na, {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var _7 = "https://f0e3be2cce5fcdc92a25c723cd7fcbbc@sentry.immersivetranslate.com/4506813369548800"
-    , Ys = !1;
-function od(t) {
-    // debugger;
-
-    try {
-        // TODO : sentryConfig.enable = false 直接返回
-        if (!t || !t.enable || Ys || Ir())
-            return;
-        Ys = !0;
-        let e = Ut()
-            , n = Ub();
-        if (t.ignoreVersions?.find(l=>l === e) || t.ignoreBuildPlatforms?.find(l=>l === n))
-            return;
-        let i = globalThis.navigator.userAgent;
-        if (t.ignoreUserAgents?.find(l=>i.match(new RegExp(l))))
-            return;
-        let {initOptions: s} = t
-            , u = {
-            dsn: _7,
-            environment: x.PROD === "1" ? "production" : "develop",
-            ...t.initOptions
-        };
-        s?.ignoreErrors && (u.ignoreErrors = rf(s.ignoreErrors)),
-        s?.denyUrls && (u.denyUrls = rf(s.denyUrls)),
-        s?.allowUrls && (u.allowUrls = rf(s.allowUrls)),
-            u.release = `${n}@${e}`,
-            Na.init(u),
-            sd()
-    } catch {}
-}
-async function sd() {
-    debugger;
-
-    try {
-        let t = await Mt.get(Ft, null);
-        if (!Ys || !t)
-            return;
-        Na.setUser({
-            id: t.id,
-            username: t.userName,
-            nickname: t.nickName,
-            email: t.email
-        })
-    } catch {}
-}
-function P9(t, e) {
-    try {
-        if (!Ys)
-            return;
-        Na.setContext(t, e)
-    } catch {}
-}
-function L9(t) {
-    try {
-        if (!Ys)
-            return;
-        Na.setTags(t)
-    } catch {}
-}

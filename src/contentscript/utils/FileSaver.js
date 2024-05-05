@@ -1,5 +1,3 @@
-"use strict";
-
 var Jc = globalThis || (typeof window < "u" ? window : self)
     , m8 = Object.create
     , Hm = Object.defineProperty

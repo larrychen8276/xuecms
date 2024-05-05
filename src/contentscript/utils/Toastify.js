@@ -1,5 +1,3 @@
-"use strict";
-
 var y6 = `
   .toastify {
     padding: 12px 20px;
